@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SCANTHERA Version One</title><meta name="theme-color" content="#0b7a75"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href='data:application/manifest+json,{"name":"SCANTHERA","short_name":"SCANTHERA","display":"standalone","background_color":"#0c1519","theme_color":"#0b7a75","start_url":"."}'>
+<style>
+:root{--bg:#eef2f3;--card:#fff;--tx:#12212a;--mut:#5a6c76;--ac:#0b7a75;--acx:#fff;--bd:#cfdadd;--bad:#b8402f;--ok:#1c8a55;--warn:#a86a00;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1519;--card:#142228;--tx:#e4eef0;--mut:#8ea3ab;--ac:#3cc4b7;--acx:#05211f;--bd:#27393f;--bad:#ff7b66;--ok:#4fd18b;--warn:#f0b24a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c1519;--card:#142228;--tx:#e4eef0;--mut:#8ea3ab;--ac:#3cc4b7;--acx:#05211f;--bd:#27393f;--bad:#ff7b66;--ok:#4fd18b;--warn:#f0b24a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header,main{max-width:1100px;margin:auto;padding:0 16px}header{padding-top:14px}main{padding-bottom:40px}
+h1{font-size:20px;margin:0}h2{font-size:15px;margin:14px 0 6px}h2:first-child{margin-top:0}
+.sub{color:var(--mut);font-size:13px;margin:2px 0 10px}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px}
+.btn,nav button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.btn.sm{padding:3px 8px;font-size:12px}.btn.on,.btn.pri,nav button[aria-selected=true]{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.btn:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+section{display:none}section.show{display:block}
+.grid{display:grid;gap:14px}@media(min-width:850px){.grid{grid-template-columns:1.4fr 1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px}
+#stage{position:relative;width:100%;height:min(62vh,600px);min-height:300px;background:#000;border-radius:8px;overflow:hidden;touch-action:none}
+#stage canvas{position:absolute;inset:0;width:100%;height:100%}#oc{cursor:crosshair}
+#empty{position:absolute;inset:0;display:grid;place-items:center;color:#9fb3ba;text-align:center;padding:20px;pointer-events:none}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+label{font-size:13px;color:var(--mut)}input[type=range]{vertical-align:middle;width:110px}
+select,input[type=text]{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px}
+#msg{min-height:20px;font-size:13px;color:var(--warn)}
+.tag{font-size:11px;padding:1px 7px;border-radius:99px;border:1px solid var(--bd);margin-left:4px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+ul{padding-left:0;margin:0;list-style:none}li{display:flex;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--bd);font-size:13px}li .sp{flex:1}
+pre{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px;font-size:12px;overflow:auto;max-height:280px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:7px 6px;border-bottom:1px solid var(--bd)}.scroll{overflow-x:auto}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.wait{color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:12px}.stat b{display:block;font-size:22px}.stat span{color:var(--mut);font-size:12px}
+.brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--ac),#2a5bd7);display:grid;place-items:center;color:#fff;font-weight:800}
+.ruo{font-size:11px;border:1px solid var(--warn);color:var(--warn);padding:1px 8px;border-radius:99px;margin-left:auto}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 4px}.chip{font:inherit;font-size:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:4px 11px;border-radius:99px;cursor:pointer;white-space:nowrap}.chip.on{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.card{box-shadow:0 1px 4px rgba(0,0,0,.07)}.flow{display:flex;flex-wrap:wrap;gap:6px}.flow span{padding:6px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--bd);font-size:13px}.flow span:not(:last-child)::after{content:" \2192";color:var(--ac)}
+.pill{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--bd)}
+
+:root{--bg:#f2f5fa;--card:#fff;--tx:#0b1626;--mut:#59697f;--ac:#2563eb;--acx:#fff;--bd:#dbe2ec;--ac2:#0ea5a4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060b16;--card:#0e1727;--tx:#e8eef9;--mut:#8a9ab3;--ac:#5b8cff;--acx:#050d22;--bd:#1d2a42;--ac2:#2dd4bf}}
+body{background:radial-gradient(1100px 480px at 85% -12%,color-mix(in srgb,var(--ac) 16%,transparent),transparent),var(--bg);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:20;max-width:none;padding:12px max(16px,calc((100% - 1100px)/2)) 0;background:color-mix(in srgb,var(--bg) 80%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd)}
+h1{font-size:19px;font-weight:700;letter-spacing:.16em}.logo{box-shadow:0 4px 14px color-mix(in srgb,var(--ac) 45%,transparent)}
+.ver{margin-left:auto;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);border:1px solid var(--bd);padding:3px 10px;border-radius:99px;background:var(--card)}
+nav{gap:4px;padding:8px 0 0}nav button{border:0;background:transparent;border-radius:8px 8px 0 0;border-bottom:2px solid transparent;color:var(--mut);padding:8px 12px}nav button[aria-selected=true]{background:transparent;color:var(--tx);border-bottom-color:var(--ac);font-weight:600}
+main{padding-top:16px}.card{border-radius:14px;box-shadow:0 1px 2px rgba(10,25,50,.05),0 10px 28px -14px rgba(10,25,50,.22)}
+.btn{border-radius:9px;transition:border-color .15s,transform .05s}.btn:hover{border-color:var(--ac)}.btn:active{transform:scale(.97)}
+.btn.on,.btn.pri{background:linear-gradient(135deg,var(--ac),var(--ac2));border-color:transparent;color:var(--acx);font-weight:600}
+#stage{border:1px solid var(--bd);border-radius:12px;box-shadow:0 14px 34px -16px rgba(0,0,0,.65)}
+h2{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);font-weight:700;margin:18px 0 8px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+.stat b{font-size:28px;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.foot{max-width:1100px;margin:0 auto;padding:0 16px 28px;color:var(--mut);font-size:12px;text-align:center}
+.links li{display:block;padding:9px 0}.links a{color:var(--ac);text-decoration:none;font-weight:600}.links small{display:block;color:var(--mut);word-break:break-all}
+
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}.col{min-width:0}
+.side{position:sticky;top:0;height:100vh;background:#080e1c;color:#9fb0cc;padding:18px 12px;display:flex;flex-direction:column;gap:6px;border-right:1px solid #16213a;z-index:30}
+.side .brand{display:flex;align-items:center;gap:10px;padding:0 6px 14px}.side .bn{font-weight:800;letter-spacing:.18em;color:#fff;font-size:15px}
+.side nav{display:flex;flex-direction:column;gap:2px;overflow:visible;padding:0}
+.side nav button{display:flex;gap:11px;align-items:center;width:100%;text-align:left;border:0;border-radius:10px;background:transparent;color:#9fb0cc;padding:10px 12px;font-size:14px}
+.side nav button:hover{background:#111b33;color:#fff}
+.side nav button[aria-selected=true]{background:linear-gradient(135deg,#2563eb,#0ea5a4);color:#fff;font-weight:600;border:0;box-shadow:0 6px 18px -8px #2563eb}
+.ic{width:20px;text-align:center;font-size:15px}
+.who{margin-top:auto;display:flex;gap:10px;align-items:center;padding:10px;border:1px solid #16213a;border-radius:12px;background:#0c1428}
+.who b{display:block;color:#fff;font-size:13px}.who small{color:#7487a8;font-size:11px}
+.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#0ea5a4);display:grid;place-items:center;color:#fff;font-weight:700;font-size:12px}
+header{padding:12px 22px 0;max-width:none}header h1{font-size:21px;letter-spacing:-.01em}.bar{display:flex;align-items:center;gap:12px}
+main{max-width:1280px;padding:16px 22px 40px;margin:0}.foot{max-width:none;padding:0 22px 28px}
+section.show{animation:fade .25s ease}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.hero{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 20%,var(--card)),var(--card) 70%);margin-bottom:14px}
+.heroT{font-size:26px;font-weight:700;margin:4px 0;letter-spacing:-.015em}
+#t-over .grid{margin-top:14px}.pbar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--bd)}.pbar i{display:block}
+.kan{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px}
+.kc{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:10px;min-height:90px}.kc h3{font-size:12px;margin:0 0 8px;display:flex;align-items:center;gap:6px}.kc h3 b{margin-left:auto;color:var(--mut)}
+.kcard{display:block;width:100%;text-align:left;font:inherit;font-size:12px;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:9px;padding:7px 9px;margin-bottom:6px;cursor:pointer}.kcard:hover{border-color:var(--ac)}
+.st{font-size:11px;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}.warn{color:var(--warn)}
+@media(max-width:899px){.app{display:block}.side{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid #16213a}
+.side .brand,.side .who{display:none}.side nav{flex-direction:row;overflow-x:auto;gap:2px}.side nav button{flex-direction:column;gap:2px;font-size:10px;padding:6px 11px;width:auto;white-space:nowrap}main{padding:14px 14px 96px}header{padding:10px 14px 0}.foot{padding-bottom:90px}}
+#panes{display:grid;grid-template-columns:repeat(var(--n,1),minmax(0,1fr));gap:8px}
+@media(max-width:899px){#panes{grid-template-columns:1fr}}
+.pane{border:2px solid var(--bd);border-radius:10px;padding:4px;min-width:0}.pane.act{border-color:var(--ac)}
+.ph{display:flex;gap:4px;align-items:center;font-size:12px;padding:2px}.ph .sp{flex:1}.pt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68%}
+.stg{position:relative;width:100%;height:min(62vh,600px);min-height:260px;background:#000;border-radius:8px;overflow:hidden;touch-action:none}
+#panes.multi .stg{height:min(48vh,440px)}.stg canvas{position:absolute;inset:0;width:100%;height:100%}.stg canvas+canvas{cursor:crosshair}
+.em{position:absolute;inset:0;display:grid;place-items:center;color:#9fb3ba;text-align:center;padding:20px;pointer-events:none}
+.stg.hot,.dz.hot{outline:2px dashed var(--ac)}.dz{border:2px dashed var(--bd);border-radius:10px;padding:14px;text-align:center;color:var(--mut);font-size:13px;cursor:pointer;margin:6px 0}
+#t-label .grid.multi{grid-template-columns:1fr}
+
+/* ---- connection code / remote sync / modality library (added) ---- */
+#gate{position:fixed;inset:0;z-index:100;background:color-mix(in srgb,var(--bg) 90%,#000);display:grid;place-items:center;padding:16px}
+.gbox{width:min(420px,100%)}.gbox input{width:100%;margin:4px 0}
+.codebig{font:700 30px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.22em;text-align:center;padding:12px;border:2px dashed var(--ac);border-radius:12px;background:var(--bg);user-select:all}
+.mh td{background:var(--bg);font-size:12px;padding-top:10px}.mz{opacity:.55}
+#gate .gcodeIn{font:600 22px ui-monospace,monospace;letter-spacing:.2em;text-align:center}
+</style></head><body><div id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gt"><div class="card gbox"><h2 id="gt" style="margin-top:0">Connect to the main server</h2>
+<p class="sub">Enter the one-time connection code shown on the main server (host laptop). Each code works once.</p>
+<input type="text" id="gcode" class="gcodeIn" placeholder="XXXX-XXXX" autocomplete="off" autocapitalize="characters" maxlength="9">
+<input type="text" id="gname" placeholder="Name of this device (e.g. Radiology PC 2)" maxlength="60">
+<div class="row"><button class="btn pri" id="ggo">Connect</button><button class="btn sm" id="goff">Use offline (local only)</button></div>
+<p class="sub bad" id="gmsg" role="alert"></p></div></div>
+<div class="app"><aside class="side"><div class="brand"><div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="#fff"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><div class="bn">SCANTHERA</div></div><nav role="tablist" id="tabs"></nav><div class="who"><span class="av" id="av">A</span><div><b id="wn">Reader A</b><small>Working as</small></div></div></aside><div class="col">
+<header><div class="bar"><div><h1 id="pt">Workspace</h1><p class="sub" style="margin:0">AI pre-labels · two blind readers · senior adjudication</p></div><span class="ver" id="syn">Local only</span><span class="ver" style="margin-left:8px">Version One</span></div><div class="chips" id="mods"></div></header>
+<main>
+<section id="t-label" class="show"><div class="grid">
+<div class="card">
+ <div class="row"><button class="btn sm" id="addp">+ Add task pane</button><span class="sub" id="pinfo"></span></div><div id="panes"></div>
+ <div class="row" id="tools"></div>
+ <div class="row"><label>Brush <input type="range" id="bw" min="2" max="60" value="10"></label>
+ <label>Brightness <input type="range" id="br" min="50" max="200" value="100"></label>
+ <label>Contrast <input type="range" id="ct" min="50" max="250" value="100"></label>
+ <button class="btn sm" id="inv">Invert</button></div>
+ <div id="msg" role="status"></div>
+ <p class="sub">Polygon: tap points, then double-tap, press Enter, or tap the first point. Keys: V pan, P polygon, B brush, X box, E erase, F fit, Ctrl+Z undo. Phone: use the zoom buttons.</p>
+</div>
+<div class="card">
+ <h2>1. Add images</h2><div class="row"><label>Modality / branch <select id="md"></select></label></div>
+ <label><input type="checkbox" id="ack"> I confirm these images contain no patient identifiers</label>
+ <div class="dz" id="dz">Drop any number of images here</div><div class="row"><input type="file" id="file" accept="image/*" multiple disabled><button class="btn sm" id="foldb">Add folder</button><input type="file" id="fold" webkitdirectory multiple hidden><button class="btn" id="demo">Add demo scan</button></div>
+ <h2>2. Reader</h2>
+ <div class="row"><select id="rd"><option value="A">Reader A</option><option value="B">Reader B</option><option value="S">Senior adjudicator</option><option value="M">AI - MedSAM (read-only)</option></select>
+ <button class="btn sm" id="none">Mark: no finding</button></div>
+ <p class="sub" id="rdnote"></p>
+ <div id="adj" hidden><h2>Adjudication panel</h2>
+ <div class="row"><label><input type="checkbox" data-cmp="A" checked> <i class="dot" style="background:#ff9f1c"></i>Reader A</label><label><input type="checkbox" data-cmp="B" checked> <i class="dot" style="background:#38bdf8"></i>Reader B</label><label><input type="checkbox" data-cmp="M" checked> <i class="dot" style="background:#34d399"></i>AI (dashed)</label></div>
+ <p class="sub" id="hint"></p>
+ <div class="row"><button class="btn sm" data-adopt="A">Adopt A</button><button class="btn sm" data-adopt="B">Adopt B</button><button class="btn sm" data-adopt="M">Adopt AI</button></div>
+ <div class="row"><select id="adr"><option>Reader A correct</option><option>Reader B correct</option><option>AI correct</option><option>Edited / mixed</option><option>No finding</option></select><input type="text" id="adn" placeholder="Name / ID" size="10"></div>
+ <input type="text" id="adt" placeholder="Decision note (optional)" style="width:100%">
+ <div class="row"><button class="btn pri" id="sign">Sign off decision</button></div><p class="sub" id="adm"></p></div>
+ <h2>AI assistant (MedSAM)</h2>
+ <div class="row"><select id="aim"><option value="srv">MedSAM server</option><option value="sim">Offline demo (simulated, not MedSAM)</option></select></div>
+ <div class="row"><input type="text" id="aiu" value="http://127.0.0.1:8000/segment" size="26"><input type="text" id="aik" placeholder="API key" size="10"></div>
+ <div class="row"><button class="btn pri" id="ais">AI Suggest from box</button><label class="btn sm">Import AI JSON<input type="file" id="aij" accept=".json" hidden></label></div>
+ <div class="row"><button class="btn pri" id="aiask">AI clinical read</button></div>
+ <div id="airead" class="sub" style="margin-top:6px"></div>
+  <p class="sub">Draw a Box around the structure, then tap AI Suggest. Results go to a separate AI layer; a human must Accept them. Assistive only, never a diagnosis.</p>
+ <h2>3. Label</h2>
+ <div class="row"><select id="lb"></select><input type="text" id="nl" placeholder="New label" size="10"><button class="btn sm" id="al">Add</button></div>
+ <h2>Cases</h2><div class="row" id="cases"></div>
+ <div class="row"><button class="btn sm" id="flag">Flag unclear</button><button class="btn sm" id="dc">Delete case</button></div>
+ <h2>Annotations (this reader)</h2><ul id="anns"></ul>
+</div></div></section>
+<section id="t-agree"><div class="card"><h2>Agreement between readers</h2>
+<p class="sub">Reader A and Reader B label each case separately. Dice of 0.80 or more on every label means they agree. Otherwise the senior adjudicator decides.</p>
+<div class="scroll"><table id="ag"></table></div></div></section>
+<section id="t-export"><div class="stats" id="stats"></div><div class="grid">
+<div class="card"><h2>Export (final labels)</h2><div class="row"><button class="btn pri" id="copy">Copy JSON</button><button class="btn" id="dl">Download JSON</button></div>
+<p class="sub">If a download does not start, use Copy JSON. Some viewers block downloads.</p><pre id="exp"></pre></div>
+<div class="card"><h2>Audit log</h2><ul id="log"></ul><div class="row"><button class="btn sm" id="wipe">Delete all data</button></div></div></div></section>
+<section id="t-over">
+<div class="hero card"><div><h2 style="margin:0">Training-data operations</h2><p class="heroT">Ship expert-verified imaging data.</p><p class="sub" style="margin:0">AI pre-labels, two readers label blind, a senior adjudicator resolves every disagreement.</p></div><div class="row"><button class="btn pri" id="samp">Load sample project</button><button class="btn" data-tab="label">Start labeling</button></div></div>
+<div class="stats" id="kpi"></div>
+<div class="card"><h2 style="margin-top:0">Pipeline</h2><div class="pbar" id="pbar"></div><div class="kan" id="kan"></div></div>
+<div class="grid"><div class="card"><h2 style="margin-top:0">By modality / branch</h2><div class="scroll"><table id="ov"></table></div></div>
+<div class="card"><h2 style="margin-top:0">Team quality</h2><div class="scroll"><table id="tq"></table></div><p class="sub">Dice = overlap with the final label. Higher is better.</p></div></div></section>
+<section id="t-queue"><div class="card"><h2 style="margin-top:0">Task queue</h2><div class="row" id="qf"></div><div class="scroll"><table id="qt"></table></div></div></section>
+<section id="t-ai"><div class="grid"><div class="card"><h2>MedSAM engine</h2>
+<p class="sub"><i class="dot" id="aid" style="background:var(--mut)"></i><span id="ast">Not tested yet</span></p>
+<div class="row"><button class="btn pri" id="atest">Test connection</button></div>
+<p class="sub">Uses the server address and key from the Workspace tab (AI assistant box).</p>
+<h2>Install once</h2><pre>conda create -n medsam python=3.10 -y
+conda activate medsam
+# PyTorch 2.x: pytorch.org/get-started/locally
+git clone https://github.com/bowang-lab/MedSAM
+cd MedSAM &amp;&amp; pip install -e .
+pip install fastapi uvicorn opencv-python pydantic
+mkdir -p work_dir/MedSAM
+# weights (about 375 MB):
+curl -L -o work_dir/MedSAM/medsam_vit_b.pth \
+ https://zenodo.org/records/10689643/files/medsam_vit_b.pth
+cp ../medsam_server.py .
+SCANTHERA_KEY=your-secret uvicorn medsam_server:app --host 127.0.0.1 --port 8000</pre>
+<p class="sub">Or run setup_medsam.sh then run_server.sh from the bundle.</p></div>
+<div class="card"><h2>Official resources</h2><ul class="links">
+<li><a href="https://github.com/bowang-lab/MedSAM" target="_blank" rel="noopener">Code repository (GitHub)</a><small>Inference script, GUI and the segment_anything package. Apache-2.0 licensed.</small></li>
+<li><a href="https://zenodo.org/records/10689643/files/medsam_vit_b.pth" target="_blank" rel="noopener">Model weights (Zenodo, recommended)</a><small>medsam_vit_b.pth, place at work_dir/MedSAM/medsam_vit_b.pth</small></li>
+<li><a href="https://drive.google.com/drive/folders/1ETWmi4AiniJeWOt6HAsYgTjYv_fkgzoN" target="_blank" rel="noopener">Model weights (Google Drive, original README)</a><small>A folder: find medsam_vit_b.pth inside it.</small></li>
+<li><a href="https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth" target="_blank" rel="noopener">SAM ViT-B base weights (fine-tuning only)</a><small>Place at work_dir/SAM/sam_vit_b_01ec64.pth. Not needed for inference.</small></li>
+<li><a href="https://github.com/bowang-lab/MedSAM2" target="_blank" rel="noopener">MedSAM2 (3D and video)</a><small>Newer option listed in the MedSAM repo news, for volumetric studies.</small></li></ul>
+<p class="sub">Check the weights' license terms on the Zenodo record before commercial use.</p></div></div></section>
+<section id="t-pacs"><div class="grid"><div class="card"><h2>PACS connection (DICOMweb)</h2><p class="sub" id="pst">Needs the shared server (node server.js).</p>
+<div class="row"><input type="text" id="pu" placeholder="https://pacs.example/dicom-web" size="34"></div>
+<div class="row"><input type="text" id="pk" placeholder="Auth header (optional): Basic xxx or Bearer xxx" size="34"><button class="btn pri" id="ps">Save and test</button></div>
+<h2>Find studies</h2><div class="row"><select id="pmod"><option value="">Any modality</option><option>MR</option><option>CT</option><option>CR</option><option>DX</option><option>MG</option><option>NM</option><option>PT</option><option>US</option><option>XA</option><option>RF</option></select><input type="text" id="pd" placeholder="Date YYYYMMDD" size="12"><input type="text" id="pdesc" placeholder="Description" size="12"><button class="btn" id="pq">Search</button></div>
+<div class="chips" id="pcat"></div><div class="scroll"><table id="ptab"></table></div><p class="sub">Only study date, modality, description and image count are read. Patient name and ID are never requested. Tick the de-identification box in Workspace before importing; burned-in text in images must be checked by a person.</p></div>
+<div class="card"><h2>Storage</h2><div class="stats" id="sto"></div><div class="row"><button class="btn pri" id="bk">Back up now</button></div><ul id="bkl"></ul>
+<p class="sub">Images and labels live on the server computer in the data folder. Set DATA_DIR to a NAS or external disk. Automatic backup every 24 h (BACKUP_HOURS), last 7 kept (KEEP_BACKUPS).</p></div></div>
+<div class="grid" style="margin-top:14px">
+<div class="card" id="cc-host"><h2>Connection code (main server only)</h2>
+<p class="sub" id="cc-st">Checking...</p>
+<div id="cc-hostui" hidden>
+<div class="row"><button class="btn pri" id="cc-gen">Generate one-time code</button><button class="btn sm" id="cc-cancel" hidden>Cancel code</button></div>
+<div class="codebig" id="cc-code" hidden></div><p class="sub" id="cc-exp"></p>
+<h2>Connected remote systems</h2><ul id="cc-list"></ul>
+<h2>Third-party servers</h2>
+<p class="sub">Redeem the code once, then send the returned token as a Bearer header. The same token reads shared data and uploads results.</p>
+<pre id="cc-api"></pre></div>
+<div id="cc-remoteui" hidden><p class="sub" id="cc-me"></p><div class="row"><button class="btn sm" id="cc-out">Disconnect this device</button></div></div></div>
+<div class="card" id="up-card"><h2>Send annotated data to the main server</h2>
+<p class="sub">Live edits already sync while connected. An upload adds a dated, modality-filed copy to the main server for reference and future access. It never overwrites the main labels.</p>
+<div class="row"><button class="btn pri" id="up-ws">Upload my annotations</button><label class="btn sm">Upload an exported JSON file<input type="file" id="up-file" accept=".json,application/json" hidden></label></div>
+<div class="row"><label>Fallback modality <select id="up-mod"></select></label></div>
+<input type="text" id="up-note" placeholder="Note (optional)" style="width:100%"><p class="sub" id="up-msg" role="status"></p></div></div>
+<div class="grid" style="margin-top:14px">
+<div class="card"><h2>Modality library</h2><div class="scroll"><table id="lib"></table></div>
+<p class="sub">Every modality has its own category for cases and for uploaded data. Remote uploads are filed on the main server in <code>data/gateway/by-modality/&lt;Modality&gt;/remote-submissions/</code>.</p></div>
+<div class="card"><h2>Remote submissions by modality</h2><div class="scroll"><table id="subt"></table></div></div></div>
+</section>
+<section id="t-comp"><div class="card"><h2>Compliance and intended use</h2>
+<p><span class="pill">Intended use</span> SCANTHERA prepares annotated datasets. It is not a medical device and gives no diagnosis. AI output is a suggestion that a qualified reader must review.</p>
+<h2>Built in</h2><ul><li>Blind dual reading: Reader A and B cannot see each other's labels</li><li>Senior adjudication when Dice agreement is below 0.80</li><li>AI suggestions kept in a separate layer; accepted items are tagged with their origin in the export</li><li>De-identification attestation before any image is added</li><li>Local-only storage, delete-all control, action log</li></ul>
+<h2>Needed before real clinical or trial use</h2><ul><li>DICOM import with automatic tag and burned-in text removal</li><li>Server-side login, roles, encryption and tamper-evident audit trail</li><li>HIPAA / GDPR review, security audit (SOC 2 / ISO 27001), IRB or ethics approval and data-use agreements</li><li>Validation study of the AI per modality and task; if used for diagnosis, regulatory route (FDA, EU MDR) with quality system (ISO 13485, IEC 62304)</li><li>Check MedSAM license terms and weights provenance</li></ul>
+<p class="sub">This list is a roadmap, not a guarantee of approval by any regulator, trial sponsor or ethics board.</p></div></section>
+</main><footer class="foot">SCANTHERA Version One · Your data stays in this browser · AI output is assistive and must be reviewed by a qualified reader</footer></div></div>
+<script>
+const $=s=>document.querySelector(s),KEY='scanthera-v1',PAL=['#ff4d4d','#ffb020','#3ccf7a','#3c9bff','#c05cff','#ff5cae'];
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let D={cases:[],labels:['Finding'],log:[]};
+try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s)}catch(_){}
+D.cases.forEach(c=>{c.none=c.none||{};c.ann.M=c.ann.M||[];c.mod=c.mod||'X-ray'});
+const EL=[0,1,2].map(i=>{const p=document.createElement('div');p.className='pane';p.innerHTML='<div class="ph"><b class="pt"></b><span class="sp"></span><button class="btn sm" data-pv="-1">◀</button><button class="btn sm" data-pv="1">▶</button><button class="btn sm" data-px="1">✕</button></div><div class="stg"><canvas></canvas><canvas tabindex="0"></canvas><div class="em">Pick a case, or drop images here.</div></div>';$('#panes').append(p);const c=p.querySelectorAll('canvas');return{p,h:p.querySelector('.pt'),s:p.querySelector('.stg'),b:c[0],o:c[1]}});
+let stage=EL[0].s,bc=EL[0].b,oc=EL[0].o,SYNC=false,SEQ=0;
+let cur=D.cases.length?0:-1,reader='A',label=0,tool='poly',view={s:1,x:0,y:0},needFit=true,drag=null,pts=[],redo=[],imgs={},inv=false,tab='label';
+const msg=t=>$('#msg').textContent=t,C=()=>D.cases[cur],A=()=>C()?C().ann[reader]:[];
+const save=()=>{if(SYNC)return flush();try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){msg('Storage is full. Export your work, then delete old cases.')}};
+const addLog=a=>{D.log.unshift(new Date().toLocaleString()+' ['+(RN[reader]||'')+'] – '+a);D.log=D.log.slice(0,150);save()};
+const RN={A:'Reader A',B:'Reader B',S:'Senior adjudicator',M:'AI (MedSAM)'};const CMPC={A:'#ff9f1c',B:'#38bdf8',M:'#34d399'};let cmp={A:1,B:1,M:1};
+
+/* geometry + drawing */
+function pathOf(g,a){g.beginPath();if(a.t==='box')g.rect(a.p[0],a.p[1],a.p[2]-a.p[0],a.p[3]-a.p[1]);else{a.p.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));if(a.t==='poly')g.closePath()}}
+function shape(g,a,col,fa,lw){pathOf(g,a);g.strokeStyle=a.t==='brush'?col+fa:col;g.fillStyle=col+fa;g.lineJoin=g.lineCap='round';g.lineWidth=a.t==='brush'?a.w:lw;if(a.t!=='brush')g.fill();g.stroke()}
+function draw(){const g=oc.getContext('2d'),b=bc.getContext('2d'),c=C();
+ [g,b].forEach(x=>{x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,oc.width,oc.height)});
+ stage.querySelector('.em').hidden=!!c;if(!c)return;const im=imgs[c.id];if(!im)return;
+ if(needFit){const s=Math.min(bc.width/im.width,bc.height/im.height);view={s,x:(bc.width-im.width*s)/2,y:(bc.height-im.height*s)/2};needFit=false}
+ b.setTransform(view.s,0,0,view.s,view.x,view.y);b.drawImage(im,0,0);
+ g.setTransform(view.s,0,0,view.s,view.x,view.y);
+ const lw=2/view.s,col=PAL[label%PAL.length];
+ A().forEach(a=>{if(!a.hide)shape(g,a,PAL[a.l%PAL.length],'66',lw)});
+ if(reader==='S')['A','B','M'].forEach(k=>{if(!cmp[k])return;g.setLineDash(k==='M'?[6/view.s,4/view.s]:[]);c.ann[k].forEach(a=>shape(g,a,CMPC[k],'22',lw*1.5));g.setLineDash([])});
+ if(drag&&drag.m==='box'&&drag.b)shape(g,{t:'box',p:[...drag.a,...drag.b]},col,'44',lw);
+ if(drag&&drag.m==='brush')shape(g,{t:'brush',p:drag.p,w:+$('#bw').value},col,'99',lw);
+ if(pts.length){shape(g,{t:'brush',p:pts,w:lw},col,'ff',lw);g.fillStyle='#fff';pts.forEach(q=>{g.beginPath();g.arc(q[0],q[1],3/view.s,0,7);g.fill()})}
+ bc.style.filter=`brightness(${$('#br').value}%) contrast(${$('#ct').value}%) invert(${inv?1:0})`}
+function sizeCanvas(){const r=stage.getBoundingClientRect(),d=window.devicePixelRatio||1;bc.width=oc.width=Math.max(1,Math.round(r.width*d));bc.height=oc.height=Math.max(1,Math.round(r.height*d));draw()}
+
+const zoomAt=(sx,sy,f)=>{const s=Math.min(40,Math.max(.05,view.s*f));f=s/view.s;view.x=sx-(sx-view.x)*f;view.y=sy-(sy-view.y)*f;view.s=s;draw()};
+const P=e=>{const r=oc.getBoundingClientRect(),k=oc.width/r.width,sx=(e.clientX-r.left)*k,sy=(e.clientY-r.top)*k;return{sx,sy,x:(sx-view.x)/view.s,y:(sy-view.y)/view.s}};
+function commit(a){if(!C()||reader==='M')return;C().ann[reader].push({...a,l:label});redo=[];save();renderSide();draw()}
+function finishPoly(){if(pts.length>2)commit({t:'poly',p:pts});pts=[];draw()}
+function erase(p){const g=oc.getContext('2d'),L=A();g.setTransform(view.s,0,0,view.s,view.x,view.y);
+ for(let i=L.length-1;i>=0;i--){const a=L[i];pathOf(g,a);g.lineWidth=a.t==='brush'?a.w:2/view.s;
+  if(a.t==='brush'?g.isPointInStroke(p.sx,p.sy):g.isPointInPath(p.sx,p.sy)){L.splice(i,1);save();renderSide();break}}draw()}
+oc.onpointerdown=e=>{if(!C())return;if(reader==='M'&&tool!=='pan'){msg('AI layer is read-only. Switch to a reader to draw, or Accept the AI result.');return}oc.setPointerCapture(e.pointerId);const p=P(e);
+ if(tool==='pan')drag={m:'pan',sx:p.sx,sy:p.sy,vx:view.x,vy:view.y};
+ else if(tool==='poly'){if(pts.length>2&&Math.hypot(p.x-pts[0][0],p.y-pts[0][1])*view.s<12)finishPoly();else{pts.push([p.x,p.y]);draw()}}
+ else if(tool==='box')drag={m:'box',a:[p.x,p.y]};
+ else if(tool==='brush')drag={m:'brush',p:[[p.x,p.y],[p.x,p.y]]};
+ else erase(p)};
+oc.onpointermove=e=>{if(!drag)return;const p=P(e);
+ if(drag.m==='pan'){view.x=drag.vx+p.sx-drag.sx;view.y=drag.vy+p.sy-drag.sy}
+ else if(drag.m==='box')drag.b=[p.x,p.y];else drag.p.push([p.x,p.y]);draw()};
+const up=()=>{if(!drag)return;const d=drag;drag=null;
+ if(d.m==='box'&&d.b&&Math.abs(d.b[0]-d.a[0])>2&&Math.abs(d.b[1]-d.a[1])>2)commit({t:'box',p:[...d.a,...d.b]});
+ else if(d.m==='brush')commit({t:'brush',p:d.p,w:+$('#bw').value});else draw()};
+oc.onpointerup=up;oc.onpointercancel=up;
+oc.ondblclick=()=>{if(tool==='poly'&&pts.length>2){pts.pop();finishPoly()}};
+
+function undo(){const a=A();if(pts.length){pts.pop();draw();return}if(a.length){redo.push(a.pop());save();renderSide();draw()}}
+function redoIt(){if(redo.length){A().push(redo.pop());save();renderSide();draw()}}
+
+/* cases */
+function shrink(f){return new Promise(res=>{const im=new Image();im.onerror=()=>res(null);im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res({url:c.toDataURL('image/jpeg',.85),w:c.width,h:c.height})};im.src=URL.createObjectURL(f)})}
+function addCase(name,r,mod){D.cases.push({id:'c'+Date.now()+'-'+String(SEQ++).padStart(4,'0')+Math.random().toString(36).slice(2,5),name,img:r.url,w:r.w,h:r.h,flag:false,mod:mod||$('#md').value,none:{},ann:{A:[],B:[],S:[],M:[]}});addLog('Added image '+name)}
+$('#ack').onchange=e=>$('#file').disabled=!e.target.checked;
+
+$('#demo').onclick=()=>{const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');
+ let b=g.createRadialGradient(256,260,40,256,260,300);b.addColorStop(0,'#5a5a5a');b.addColorStop(1,'#151515');g.fillStyle=b;g.fillRect(0,0,512,512);
+ [[170,250],[342,250]].forEach(([x,y])=>{let l=g.createRadialGradient(x,y,10,x,y,140);l.addColorStop(0,'#141414');l.addColorStop(1,'#3b3b3b');g.fillStyle=l;g.beginPath();g.ellipse(x,y,92,156,0,0,7);g.fill()});
+ g.fillStyle='rgba(200,200,200,.35)';g.fillRect(240,20,32,472);g.strokeStyle='rgba(220,220,220,.16)';g.lineWidth=6;
+ for(let i=0;i<8;i++){g.beginPath();g.ellipse(170,130+i*40,120,56,0,3.4,5.8);g.stroke();g.beginPath();g.ellipse(342,130+i*40,120,56,0,3.6,6);g.stroke()}
+ const nx=300+Math.random()*60,ny=200+Math.random()*120;let q=g.createRadialGradient(nx,ny,2,nx,ny,30);q.addColorStop(0,'rgba(240,240,240,.9)');q.addColorStop(1,'rgba(240,240,240,0)');g.fillStyle=q;g.beginPath();g.arc(nx,ny,30,0,7);g.fill();
+ addCase('demo-scan-'+(D.cases.length+1)+'.png',{url:c.toDataURL('image/jpeg',.9),w:512,h:512});save();open(D.cases.length-1)};
+function open0(i){cur=i;pts=[];redo=[];drag=null;needFit=true;const c=C();
+ if(c&&!imgs[c.id]){const im=new Image();im.onload=()=>{imgs[c.id]=im;drawAll()};im.src=c.img}renderSide();draw()}
+$('#dc').onclick=()=>{if(!C())return;addLog('Deleted '+C().name);PN.forEach((p,i)=>{p.cid=D.cases[i===ap?cur:p.cur]?.id});D.cases.splice(cur,1);reidx();save();renderSide();drawAll()};
+$('#flag').onclick=()=>{if(!C())return;C().flag=!C().flag;addLog((C().flag?'Flagged ':'Unflagged ')+C().name);msg(C().flag?'Flagged for a senior reader.':'Flag removed.');renderSide()};
+$('#none').onclick=()=>{if(!C())return;const n=C().none;n[reader]=!n[reader];save();renderSide()};
+$('#rd').onchange=e=>{reader=e.target.value;if(reader!=='M')lastH=reader;redo=[];pts=[];renderSide();draw()};
+$('#lb').onchange=e=>{label=+e.target.value;draw()};
+$('#al').onclick=()=>{const v=$('#nl').value.trim();if(!v||D.labels.includes(v))return;D.labels.push(v);label=D.labels.length-1;$('#nl').value='';save();renderSide()};
+
+function renderSide(){const c=C();
+ $('#cases').innerHTML=D.cases.length?D.cases.map((x,i)=>(mf!=='All'&&x.mod!==mf)?'':`<button class="btn sm ${i===cur?'on':''}" data-i="${i}">${esc(x.name.slice(0,16))}<span class="tag">A${x.ann.A.length} B${x.ann.B.length}${x.ann.S.length?' S'+x.ann.S.length:''}${x.flag?' flag':''}</span></button>`).join(''):'<span class="sub">No cases yet.</span>';
+ $('#lb').innerHTML=D.labels.map((l,i)=>`<option value="${i}" ${i===label?'selected':''}>${esc(l)}</option>`).join('');
+ $('#tools').innerHTML=[['pan','Pan'],['poly','Polygon'],['brush','Brush'],['box','Box'],['erase','Erase']].map(([k,l])=>`<button class="btn ${tool===k?'on':''}" data-tool="${k}">${l}</button>`).join('')+'<button class="btn" data-z="in">+</button><button class="btn" data-z="out">−</button><button class="btn" data-z="fit">Fit</button><button class="btn" data-u="1">Undo</button><button class="btn" data-u="2">Redo</button>';
+ $('#rdnote').textContent=c?`Labeling as ${RN[reader]}. ${c.none[reader]?'Marked: no finding.':''} Other readers' labels are hidden.`:'';
+ $('#none').className='btn sm'+(c&&c.none[reader]?' on':'');
+ $('#anns').innerHTML=A().map((a,i)=>`<li><i class="dot" style="background:${PAL[a.l%PAL.length]}"></i><span class="sp">${esc(D.labels[a.l])} · ${a.t}</span><button class="btn sm" data-hide="${i}">${a.hide?'Show':'Hide'}</button>${reader==='M'?`<button class="btn sm pri" data-acc="${i}">Accept</button>`:''}<button class="btn sm" data-del="${i}">Delete</button></li>`).join('')||'<li class="wait">None yet.</li>'}
+
+/* agreement + export */
+function raster(c,list,l){const S=256,k=S/Math.max(c.w,c.h),cv=document.createElement('canvas');cv.width=cv.height=S;const g=cv.getContext('2d',{willReadFrequently:true});g.setTransform(k,0,0,k,0,0);
+ list.filter(a=>a.l===l).forEach(a=>shape(g,a,'#ffffff','ff',.6));const d=g.getImageData(0,0,S,S).data,m=new Uint8Array(S*S);for(let i=0;i<S*S;i++)m[i]=d[i*4+3]>127?1:0;return m}
+const done=(c,r)=>c.ann[r].length||c.none[r];
+function verdict(c){if(!done(c,'A')||!done(c,'B'))return{s:'wait',m:null};
+ const a=c.ann.A,b=c.ann.B,ls=[...new Set([...a,...b].map(x=>x.l))];
+ const rows=ls.map(l=>{const x=raster(c,a,l),y=raster(c,b,l);let i=0,sa=0,sb=0;for(let k=0;k<x.length;k++){sa+=x[k];sb+=y[k];i+=x[k]&y[k]}return sa+sb?2*i/(sa+sb):1});
+ return{s:rows.every(d=>d>=.8)?'agree':'disagree',m:rows.length?rows.reduce((p,q)=>p+q,0)/rows.length:1}}
+const finalOf=c=>{if(c.ann.S.length||c.none.S)return['adjudicator',c.ann.S];return verdict(c).s==='agree'?['consensus',c.ann.A]:[null,[]]};
+function renderAgree(){$('#ag').innerHTML=D.cases.length?'<tr><th>Case</th><th>Modality</th><th>Dice A/B</th><th>AI vs final</th><th>Result</th><th></th></tr>'+D.cases.map((c,i)=>{const v=verdict(c),adj=c.ann.S.length||c.none.S;
+ const st=adj?['Adjudicated','ok']:v.s==='agree'?['Agree','ok']:v.s==='disagree'?['Needs adjudication','bad']:['Waiting for both readers','wait'];
+ return`<tr><td>${esc(c.name)}${c.flag?'<span class="tag">flag</span>':''}</td><td>${esc(c.mod||'')}</td><td>${v.m===null?'–':v.m.toFixed(2)}</td><td>${aiD(c)}</td><td class="${st[1]}">${st[0]}</td><td><button class="btn sm" data-go="${i}" data-r="${v.s==='disagree'?'S':'A'}">Open</button></td></tr>`}).join(''):'<tr><td class="wait">No cases yet.</td></tr>'}
+const r1=n=>Math.round(n*10)/10;
+function bbox(a){const q=a.t==='box'?[[a.p[0],a.p[1]],[a.p[2],a.p[3]]]:a.p,pad=a.t==='brush'?a.w/2:0,xs=q.map(p=>p[0]),ys=q.map(p=>p[1]),x0=Math.min(...xs)-pad,y0=Math.min(...ys)-pad;return[r1(x0),r1(y0),r1(Math.max(...xs)+pad-x0),r1(Math.max(...ys)+pad-y0)]}
+const seg=a=>a.t==='box'?[a.p[0],a.p[1],a.p[2],a.p[1],a.p[2],a.p[3],a.p[0],a.p[3]].map(r1):a.p.flat().map(r1);
+const exportData=()=>({labels:D.labels,images:D.cases.map(c=>{const[src,l]=finalOf(c);return{file:c.name,modality:c.mod,ai_assisted:c.ann.M.length>0,adjudication:c.adj||null,width:c.w,height:c.h,source:src||'pending',annotations:l.map(a=>({label:D.labels[a.l],type:a.t,...(a.src?{origin:a.src}:{}),bbox:bbox(a),[a.t==='brush'?'polyline':'segmentation']:seg(a),...(a.t==='brush'?{width:a.w}:{})}))}})});
+function renderExport(){const ex=exportData(),fin=ex.images.filter(i=>i.source!=='pending').length,n=ex.images.reduce((s,i)=>s+i.annotations.length,0),vs=D.cases.map(verdict).filter(v=>v.s!=='wait'),ag=vs.length?Math.round(vs.filter(v=>v.s==='agree').length/vs.length*100)+'%':'–';
+ $('#stats').innerHTML=[[D.cases.length,'Cases'],[fin+'/'+D.cases.length,'Final labels ready'],[n,'Final annotations'],[ag,'Readers agree']].map(([a,b])=>`<div class="card stat"><b>${a}</b><span>${b}</span></div>`).join('');
+ $('#exp').textContent=JSON.stringify(ex,null,1);$('#log').innerHTML=D.log.map(l=>`<li>${esc(l)}</li>`).join('')||'<li class="wait">Actions are recorded here.</li>'}
+$('#copy').onclick=()=>{try{navigator.clipboard.writeText($('#exp').textContent);$('#copy').textContent='Copied'}catch(_){$('#copy').textContent='Select the text to copy'}addLog('Copied export')};
+$('#dl').onclick=()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([$('#exp').textContent],{type:'application/json'}));a.download='scanthera-export.json';a.click();addLog('Downloaded export')}catch(_){}};
+$('#wipe').onclick=e=>{if(e.target.dataset.s){D={cases:[],labels:['Finding'],log:[]};imgs={};save();e.target.textContent='Delete all data';delete e.target.dataset.s;open(-1);renderExport()}else{e.target.dataset.s=1;e.target.textContent='Tap again to delete everything'}};
+
+/* wiring */
+function setTab(t){tab=t;document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',x.dataset.tab===t));document.querySelectorAll('section').forEach(s=>s.classList.toggle('show',s.id==='t-'+t));
+ if(t==='agree')renderAgree();if(t==='export')renderExport();if(t==='over')renderOver();if(t==='queue')renderQueue();$('#pt').textContent=TT[t]||'';if(t==='label')sizeCanvas()}
+$('#tabs').innerHTML=[['label','Workspace'],['over','Overview'],['agree','Agreement'],['export','Export'],['ai','AI Engine'],['comp','Compliance']].map(([k,l],i)=>`<button role="tab" data-tab="${k}" aria-selected="${i===0}">${l}</button>`).join('');
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+ if(d.tab)setTab(d.tab);
+ if(d.i!==undefined)open(+d.i);
+ if(d.tool){tool=d.tool;pts=[];renderSide();draw()}
+ if(d.z){const cx=oc.width/2,cy=oc.height/2;if(d.z==='fit'){needFit=true;draw()}else zoomAt(cx,cy,d.z==='in'?1.3:1/1.3)}
+ if(d.u)d.u==='1'?undo():redoIt();
+ if(d.hide!==undefined){A()[+d.hide].hide=!A()[+d.hide].hide;save();renderSide();draw()}
+ if(d.del!==undefined){A().splice(+d.del,1);save();renderSide();draw()}
+ if(d.go!==undefined){reader=d.r;$('#rd').value=reader;setTab('label');open(+d.go)}});
+$('#inv').onclick=()=>{inv=!inv;draw()};['br','ct'].forEach(i=>$('#'+i).oninput=draw);
+document.addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)||tab!=='label')return;const k=e.key.toLowerCase();
+ if((e.ctrlKey||e.metaKey)&&k==='z'){e.preventDefault();e.shiftKey?redoIt():undo();return}if((e.ctrlKey||e.metaKey)&&k==='y'){redoIt();return}
+ const m={v:'pan',p:'poly',b:'brush',x:'box',e:'erase'};if(m[k]){tool=m[k];pts=[];renderSide();draw()}
+ if(k==='f'){needFit=true;draw()}if(k==='+'||k==='=')zoomAt(oc.width/2,oc.height/2,1.3);if(k==='-')zoomAt(oc.width/2,oc.height/2,1/1.3);
+ if(k==='enter')finishPoly();if(k==='escape'){pts=[];drag=null;draw()}});
+/* SCANTHERA v2: modalities, AI layer, overview */
+const MODS=['X-ray','CT','MRI','Mammography','Nuclear medicine','PET','Ultrasound','Fluoroscopy','Interventional','Dental','Pathology','Other'];
+const PRE={'X-ray':['Nodule','Consolidation','Pneumothorax','Fracture'],CT:['Lesion','Hemorrhage','Mass','Calcification'],MRI:['Lesion','Tumor','Edema','Infarct'],Mammography:['Mass','Calcifications','Architectural distortion'],'Nuclear medicine':['Hot spot','Cold defect'],PET:['Hypermetabolic lesion'],Ultrasound:['Cyst','Solid mass','Free fluid']};
+let mf='All',lastH='A';
+$('#md').innerHTML=MODS.map(m=>`<option>${m}</option>`).join('');
+$('#md').onchange=e=>{(PRE[e.target.value]||[]).forEach(l=>{if(!D.labels.includes(l))D.labels.push(l)});save();renderSide()};
+const _rs=renderSide;renderSide=()=>{_rs();$('#mods').innerHTML=['All',...MODS].map(m=>{const n=m==='All'?D.cases.length:D.cases.filter(c=>c.mod===m).length;return`<button class="chip ${mf===m?'on':''}" data-mf="${m}">${m}${n?' '+n:''}</button>`}).join('')};
+function aiD(c){const f=finalOf(c)[1];if(!c.ann.M.length||!f.length)return'–';const ls=[...new Set(f.map(x=>x.l))],r=ls.map(l=>{const x=raster(c,c.ann.M,l),y=raster(c,f,l);let i=0,t=0;for(let k=0;k<x.length;k++){t+=x[k]+y[k];i+=x[k]&y[k]}return t?2*i/t:1});return(r.reduce((a,b)=>a+b,0)/r.length).toFixed(2)}
+function renderOver(){const rows=MODS.map(m=>{const cs=D.cases.filter(c=>c.mod===m);if(!cs.length)return'';const fin=cs.filter(c=>finalOf(c)[0]).length,vs=cs.map(verdict).filter(v=>v.s!=='wait'),ag=vs.length?Math.round(vs.filter(v=>v.s==='agree').length/vs.length*100)+'%':'–';return`<tr><td>${m}</td><td>${cs.length}</td><td>${cs.filter(c=>c.ann.M.length).length}</td><td>${ag}</td><td>${fin}/${cs.length}</td></tr>`}).join('');
+ $('#ov').innerHTML='<tr><th>Modality</th><th>Cases</th><th>AI-assisted</th><th>Readers agree</th><th>Final</th></tr>'+(rows||'<tr><td colspan="5" class="wait">No cases yet.</td></tr>')}
+function simSeg(c,b){const im=imgs[c.id],S=256,k=S/Math.max(c.w,c.h),W=Math.round(c.w*k),H=Math.round(c.h*k),cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0,W,H);const d=g.getImageData(0,0,W,H).data,gr=i=>d[i*4]*.3+d[i*4+1]*.6+d[i*4+2]*.1;
+ const[x0,y0,x1,y1]=b.map(v=>Math.round(v*k)),cx=(x0+x1)>>1,cy=(y0+y1)>>1;let m=0,n=0;for(let y=cy-2;y<=cy+2;y++)for(let x=cx-2;x<=cx+2;x++){m+=gr(y*W+x);n++}m/=n;
+ const seen=new Uint8Array(W*H),q=[[cx,cy]],pts=[];seen[cy*W+cx]=1;
+ while(q.length){const[x,y]=q.pop();pts.push([x,y]);for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const X=x+dx,Y=y+dy;if(X<x0||X>x1||Y<y0||Y>y1||X<0||Y<0||X>=W||Y>=H||seen[Y*W+X])continue;seen[Y*W+X]=1;if(Math.abs(gr(Y*W+X)-m)<28)q.push([X,Y])}}
+ if(pts.length<20)return[];return[hull(pts).flatMap(p=>[p[0]/k,p[1]/k])]}
+function hull(P){P.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];for(const p of P){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(const p of P.slice().reverse()){while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}return lo.slice(0,-1).concat(up.slice(0,-1))}
+function applyAI(c,polys,model){polys=(polys||[]).filter(p=>p.length>=6);if(!polys.length)return msg('The AI returned no mask. Try a tighter box.');
+ polys.forEach(p=>{const q=[];for(let i=0;i<p.length;i+=2)q.push([p[i],p[i+1]]);c.ann.M.push({t:'poly',p:q,l:label,src:model})});
+ addLog('AI suggestion ('+model+') on '+c.name);save();reader='M';$('#rd').value='M';renderSide();draw();msg('AI suggestion added to the AI layer. Review it, then Accept or Delete.')}
+async function aiSuggest(){const c=C();if(!c)return msg('Open a case first.');
+ const bx=c.ann[reader==='M'?lastH:reader].filter(a=>a.t==='box').pop();
+ if(!bx)return msg('Use the Box tool around the structure first, then tap AI Suggest.');
+ const box=[Math.min(bx.p[0],bx.p[2]),Math.min(bx.p[1],bx.p[3]),Math.max(bx.p[0],bx.p[2]),Math.max(bx.p[1],bx.p[3])].map(Math.round);
+ if(!imgs[c.id])return msg('Image still loading.');msg('AI working...');let polys,model;
+ try{if($('#aim').value==='sim'){polys=simSeg(c,box);model='simulated-demo'}else{
+  const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),90000);
+  const r=await fetch($('#aiu').value.trim(),{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':$('#aik').value},body:JSON.stringify({image:imgData(c),box,width:c.w,height:c.h,modality:c.mod}),signal:ac.signal});clearTimeout(tm);
+  if(!r.ok)throw Error('server answered '+r.status);const j=await r.json();polys=j.polygons;model=j.model||'medsam'}}
+ catch(e){return msg('AI unavailable ('+e.message+'). Check the server and key, or use Import AI JSON or the offline demo.')}
+ applyAI(c,polys,model)}
+$('#ais').onclick=aiSuggest;
+$('#aij').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f||!C())return;try{const j=JSON.parse(await f.text());applyAI(C(),j.polygons,j.model||'medsam-file')}catch(_){msg('That is not a valid AI JSON file.')}};
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+ if(d.mf){mf=d.mf;renderSide()}
+ if(d.acc!==undefined&&C()){const a=C().ann.M[+d.acc];C().ann[lastH].push({...a,p:JSON.parse(JSON.stringify(a.p)),src:'ai-accepted'});addLog('Accepted AI suggestion into '+RN[lastH]);save();msg('Copied to '+RN[lastH]+'. Switch to that reader to review or edit it.')}});
+$('#atest').onclick=async()=>{const u=$('#aiu').value.trim().replace(/\/segment\/?$/,'')+'/health';try{const r=await fetch(u);if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();$('#aid').style.background='var(--ok)';$('#ast').textContent='Connected: '+j.model+' on '+j.device}catch(e){$('#aid').style.background='var(--bad)';$('#ast').textContent='Not reachable ('+e.message+'). Is the server running?'}};
+/* SCANTHERA: Scale-style ops layer + AI-integrated adjudication */
+const TT={label:'Workspace',over:'Overview',queue:'Task queue',agree:'Agreement',export:'Export',ai:'AI Engine',comp:'Compliance'};
+const TABS=[['label','Workspace','◉'],['over','Overview','▦'],['queue','Task queue','☰'],['adj','Adjudication','⚖'],['agree','Agreement','⇄'],['export','Export','⇩'],['pacs','PACS & Storage','⛁'],['ai','AI Engine','✦'],['comp','Compliance','✓']];
+$('#tabs').innerHTML=TABS.map(([k,l,i],n)=>`<button role="tab" ${k==='adj'?'data-adj="1"':`data-tab="${k}"`} aria-selected="${n===0}"><span class="ic">${i}</span><span class="tl">${l}</span></button>`).join('');
+function dice2(c,a,b){const ls=[...new Set([...a,...b].map(x=>x.l))],r=ls.map(l=>{const x=raster(c,a,l),y=raster(c,b,l);let i=0,t=0;for(let k=0;k<x.length;k++){t+=x[k]+y[k];i+=x[k]&y[k]}return t?2*i/t:1});return r.length?r.reduce((p,q)=>p+q,0)/r.length:1}
+const dice=(c,X,Y)=>c.ann[X].length&&c.ann[Y].length?dice2(c,c.ann[X],c.ann[Y]):null;
+function stg(c){const f=finalOf(c)[0];if(f)return[f==='adjudicator'?'Final · adjudicated':'Final · consensus','ok','Final'];const v=verdict(c);if(v.s==='disagree')return['Needs adjudication','bad','Needs adjudication'];if(done(c,'A')||done(c,'B'))return['In dual read','warn','In dual read'];return['Unlabeled','wait','Unlabeled']}
+function renderOver(){const cs=D.cases,st=cs.map(stg),n=cs.length,cnt=k=>st.filter(s=>s[2]===k).length,vs=cs.map(verdict).filter(v=>v.s!=='wait'),ag=vs.length?Math.round(vs.filter(v=>v.s==='agree').length/vs.length*100)+'%':'–',
+ aiN=cs.reduce((s,c)=>s+c.ann.M.length,0),acc=cs.reduce((s,c)=>s+['A','B','S'].reduce((t,r)=>t+c.ann[r].filter(a=>a.src==='ai-accepted'||/^adopted-AI/.test(a.src||'')).length,0),0);
+ $('#kpi').innerHTML=[[n,'Tasks'],[cnt('Final')+'/'+n,'Final'],[ag,'Reader agreement'],[cnt('Needs adjudication'),'Awaiting adjudication'],[aiN?Math.round(acc/aiN*100)+'%':'–','AI suggestions used']].map(([a,b])=>`<div class="card stat"><b>${a}</b><span>${b}</span></div>`).join('');
+ const K=['Unlabeled','In dual read','Needs adjudication','Final'],col=['var(--mut)','var(--warn)','var(--bad)','var(--ok)'];
+ $('#pbar').innerHTML=K.map((k,i)=>`<i style="flex:${cnt(k)};background:${col[i]}" title="${k}"></i>`).join('');
+ $('#kan').innerHTML=K.map((k,i)=>`<div class="kc"><h3><i class="dot" style="background:${col[i]}"></i>${k}<b>${cnt(k)}</b></h3>${cs.map((c,j)=>st[j][2]===k?`<button class="kcard" data-go="${j}" data-r="${k==='Needs adjudication'?'S':'A'}"><span class="pill">${esc(c.mod||'')}</span> ${esc(c.name.slice(0,18))}${c.ann.M.length?' ✦':''}</button>`:'').join('')||'<p class="sub" style="margin:0">Empty</p>'}</div>`).join('');
+ const rows=MODS.map(m=>{const x=cs.filter(c=>c.mod===m);if(!x.length)return'';const v2=x.map(verdict).filter(v=>v.s!=='wait');return`<tr><td>${m}</td><td>${x.length}</td><td>${x.filter(c=>c.ann.M.length).length}</td><td>${v2.length?Math.round(v2.filter(v=>v.s==='agree').length/v2.length*100)+'%':'–'}</td><td>${x.filter(c=>finalOf(c)[0]).length}/${x.length}</td></tr>`}).join('');
+ $('#ov').innerHTML='<tr><th>Modality</th><th>Tasks</th><th>AI</th><th>Agree</th><th>Final</th></tr>'+(rows||'<tr><td colspan="5" class="wait">No tasks yet.</td></tr>');
+ const rq=r=>{let k=0,an=0,ds=[];cs.forEach(c=>{const x=c.ann[r];if(x.length||c.none[r])k++;an+=x.length;const f=finalOf(c);if(r!=='S'&&f[0]&&x.length&&f[1].length)ds.push(dice2(c,x,f[1]))});return[k,an,ds.length?(ds.reduce((p,q)=>p+q,0)/ds.length).toFixed(2):'–']};
+ $('#tq').innerHTML='<tr><th>Role</th><th>Tasks</th><th>Labels</th><th>Dice vs final</th></tr>'+['A','B','S','M'].map(r=>{const q=rq(r);return`<tr><td>${RN[r]}</td><td>${q[0]}</td><td>${q[1]}</td><td>${q[2]}</td></tr>`}).join('')}
+let qs='All';
+function renderQueue(){$('#qf').innerHTML=['All','Unlabeled','In dual read','Needs adjudication','Final'].map(x=>`<button class="chip ${qs===x?'on':''}" data-qs="${x}">${x}</button>`).join('');
+ const rows=D.cases.map((c,i)=>({c,i,s:stg(c)})).filter(o=>qs==='All'||o.s[2]===qs);
+ $('#qt').innerHTML='<tr><th>Task</th><th>Modality</th><th>A</th><th>B</th><th>AI</th><th>Stage</th><th></th></tr>'+(rows.length?rows.map(({c,i,s})=>`<tr><td>${esc(c.name)}${c.flag?'<span class="tag">flag</span>':''}</td><td><span class="pill">${esc(c.mod||'')}</span></td><td>${done(c,'A')?'✓':'–'}</td><td>${done(c,'B')?'✓':'–'}</td><td>${c.ann.M.length||'–'}</td><td><span class="st ${s[1]}">${s[0]}</span></td><td><button class="btn sm" data-go="${i}" data-r="${s[2]==='Needs adjudication'?'S':'A'}">Open</button></td></tr>`).join(''):'<tr><td colspan="7" class="wait">Nothing here. Load the sample project from Overview.</td></tr>')}
+const _rs2=renderSide;renderSide=()=>{_rs2();const c=C(),on=reader==='S'&&c;$('#adj').hidden=!on;$('#wn').textContent=RN[reader];$('#av').textContent=reader==='M'?'AI':reader;
+ if(on){const f=(x,y)=>{const d=dice(c,x,y);return d===null?'–':d.toFixed(2)},ab=dice(c,'A','B'),am=dice(c,'A','M'),bm=dice(c,'B','M');let h=`Dice: A–B ${f('A','B')} · AI–A ${f('A','M')} · AI–B ${f('B','M')}.`;
+  if(ab!==null&&ab<.8&&am!==null&&bm!==null)h+=am>bm?' AI sides with Reader A.':bm>am?' AI sides with Reader B.':' AI is equidistant.';
+  $('#hint').textContent=h;$('#adm').textContent=c.adj?`Signed by ${c.adj.by}: ${c.adj.reason}`:'Not signed off yet.';if(!$('#adn').value)$('#adn').value=D.adjName||''}};
+function sample(){const cfg=[['X-ray','#7a7a7a'],['CT','#8a8a8a'],['MRI','#6d7480'],['Mammography','#8b7b7b'],['Nuclear medicine','#14202c'],['Ultrasound','#363636']];
+ cfg.forEach(([m,tone],i)=>{const cv=document.createElement('canvas');cv.width=cv.height=512;const g=cv.getContext('2d');g.fillStyle='#0b0b0b';g.fillRect(0,0,512,512);
+  const b=g.createRadialGradient(256,256,20,256,256,250);b.addColorStop(0,tone);b.addColorStop(1,'#050505');g.fillStyle=b;g.beginPath();g.ellipse(256,256,i===2?170:210,i===5?230:200,0,0,7);g.fill();
+  for(let k=0;k<1400;k++){g.fillStyle=`rgba(255,255,255,${Math.random()*.06})`;g.fillRect(Math.random()*512,Math.random()*512,2,2)}
+  const nx=190+Math.random()*130,ny=170+Math.random()*150,r=24+Math.random()*12,q=g.createRadialGradient(nx,ny,2,nx,ny,r);q.addColorStop(0,'rgba(245,245,245,.95)');q.addColorStop(1,'rgba(245,245,245,0)');g.fillStyle=q;g.beginPath();g.arc(nx,ny,r,0,7);g.fill();
+  addCase('sample-'+m.toLowerCase().replace(/ /g,'-')+'.png',{url:cv.toDataURL('image/jpeg',.85),w:512,h:512});const c=D.cases[D.cases.length-1];c.mod=m;
+  const ring=(dx,dy,j,src)=>{const p=[];for(let t=0;t<14;t++){const a=t/14*6.283,rr=r+(Math.random()-.5)*j;p.push([nx+dx+Math.cos(a)*rr,ny+dy+Math.sin(a)*rr])}return{t:'poly',p,l:0,...(src?{src}:{})}};
+  if(i<5){c.ann.A=[ring(0,0,3)];c.ann.B=[ring(i%2?24:1,i%2?16:1,3)];c.ann.M=[ring(2,1,5,'simulated-demo')]}
+  if(i===4)c.ann.B=[];if(i===1)c.flag=true;
+  if(i===3){c.ann.S=[ring(2,1,5,'adopted-AI')];c.adj={by:'Dr. Demo',reason:'AI correct',note:'Sample decision',t:Date.now()}}});
+ addLog('Loaded sample project');save();open(D.cases.length-6);renderOver()}
+$('#samp').onclick=sample;
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.cmp;if(k){cmp[k]=e.target.checked?1:0;draw()}});
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+ if(d.qs){qs=d.qs;renderQueue()}
+ if(d.adopt&&C()){const c=C(),k=d.adopt,nm=k==='M'?'AI':'Reader '+k;c.ann.S=JSON.parse(JSON.stringify(c.ann[k])).map(a=>({...a,src:'adopted-'+(k==='M'?'AI':k)}));c.none.S=!!c.none[k];$('#adr').selectedIndex=k==='A'?0:k==='B'?1:2;addLog('Adjudicator adopted '+nm+' on '+c.name);save();renderSide();draw();msg('Adopted '+nm+'. Edit it if needed, then sign off.')}
+ if(d.adj){const i=D.cases.findIndex(c=>stg(c)[2]==='Needs adjudication');reader='S';$('#rd').value='S';setTab('label');if(i>=0)open(i);else{renderSide();draw();msg('No cases need adjudication right now. You are in the adjudicator view.')}$('#pt').textContent='Adjudication';document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',x.dataset.adj?'true':'false'))}});
+$('#sign').onclick=()=>{const c=C();if(!c)return;if(!done(c,'S'))return msg('Adopt A, B or AI, or draw your own decision, then sign off.');const by=$('#adn').value.trim();if(!by)return msg('Enter your name or ID to sign off.');D.adjName=by;c.adj={by,reason:$('#adr').value,note:$('#adt').value.trim(),t:Date.now()};addLog('Adjudication signed off ('+c.adj.reason+') on '+c.name);save();renderSide();msg('Decision signed and logged.')};
+
+/* ---- AI clinical read: short medical impression + label verdict vs human readers ---- */
+const AI_SYSTEM="You are a radiology/pathology QA assistant. Reply ONLY with JSON: {\"impression\":\"<=25 words, clinical terms\",\"label\":\"<one label from the allowed list or 'none'>\",\"verdict\":\"A|B|AI|none|mixed\",\"confidence\":0-100,\"reason\":\"<=20 words\"}. Decide which reader's label is medically correct. Be concise, no disclaimers, no markdown.";
+function aiSummary(c){const out={modality:c.mod,labels:D.labels,readers:{}};
+ for(const r of['A','B','M','S']){out.readers[r==='M'?'AI':r]=c.none[r]&&!c.ann[r].length?'no finding':c.ann[r].map(a=>({label:D.labels[a.l],shape:a.t,bbox:bbox(a)}))}
+ const d=(x,y)=>{const v=dice(c,x,y);return v===null?null:+v.toFixed(2)};
+ out.dice={AB:d('A','B'),AI_A:d('A','M'),AI_B:d('B','M')};return out}
+function ruleRead(c,s){const{AB,AI_A,AI_B}=s.dice,lab=r=>[...new Set(c.ann[r].map(a=>D.labels[a.l]))].join(', ')||'none';
+ if(AB===null)return{impression:'Both human readers must finish before a comparison.',label:'–',verdict:'none',confidence:0,reason:'Insufficient human reads.',src:'rule-based'};
+ if(AB>=.8)return{impression:'Readers concordant on '+lab('A')+'.',label:lab('A'),verdict:'A',confidence:Math.round(AB*100),reason:'Dice A–B '+AB+(AI_A!==null?'; AI–A '+AI_A:''),src:'rule-based'};
+ if(AI_A===null||AI_B===null)return{impression:'Readers disagree; no AI layer to arbitrate.',label:'–',verdict:'mixed',confidence:30,reason:'Dice A–B '+AB,src:'rule-based'};
+ const w=AI_A>=AI_B?'A':'B';return{impression:'Readers disagree. AI closer to Reader '+w+'.',label:lab(w),verdict:w,confidence:Math.round(Math.max(AI_A,AI_B)*100),reason:`Dice AI–A ${AI_A}, AI–B ${AI_B}`,src:'rule-based (no image read)'}}
+async function aiClinical(){const c=C();if(!c)return msg('Open a case first.');
+ const s=aiSummary(c),box=$('#airead');let r;box.textContent='AI reading...';
+ try{if($('#aim').value==='sim')throw Error('offline mode');
+  const u=$('#aiu').value.trim().replace(/\/segment\/?$/,'')+'/assess';
+  const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),60000);
+  const res=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':$('#aik').value},body:JSON.stringify({image:imgData(c),system:AI_SYSTEM,summary:s}),signal:ac.signal});clearTimeout(tm);
+  if(!res.ok)throw Error('HTTP '+res.status);r=await res.json();r.src=r.model||'AI'}
+ catch(e){r=ruleRead(c,s)}
+ c.aiRead=r;save();showRead(r)}
+function showRead(r){const v={A:'Reader A',B:'Reader B',AI:'AI',none:'No finding',mixed:'Mixed / edit'}[r.verdict]||r.verdict;
+ const e=x=>String(x??'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+ $('#airead').innerHTML=`<b>${e(r.label)}</b> · correct: <b>${e(v)}</b> · ${+r.confidence||0}%<br>${e(r.impression)}<br><i>${e(r.reason)}</i> <span class="tag">${e(r.src||'')}</span><br><button class="btn sm" id="aiuse">Use in adjudication</button><span class="sub"> Assistive only; a human signs off.</span>`;
+ $('#aiuse').onclick=()=>{const m={A:0,B:1,AI:2,mixed:3,none:4}[r.verdict];if(m===undefined)return;
+  if(reader!=='S'){reader='S';$('#rd').value='S'}
+  const adopt={A:'A',B:'B',AI:'M'}[r.verdict];if(adopt)document.querySelector(`[data-adopt="${adopt}"]`)?.click();
+  $('#adr').selectedIndex=m;renderSide();msg('Pre-filled from AI read. Review, then sign off.')}}
+$('#aiask').onclick=aiClinical;
+/* ---- multi-pane workspace: up to 3 tasks, one modality per pane ---- */
+const PN=[0,1,2].map(i=>({cur:-1,cid:null,reader:'A',label:0,view:{s:1,x:0,y:0},needFit:true,drag:null,pts:[],redo:[],open:i===0}));let ap=0;
+const pm=i=>D.cases[i===ap?cur:PN[i].cur]?.mod;
+function sw(i){Object.assign(PN[ap],{cur,reader,label,view,needFit,drag,pts,redo});ap=i;({cur,reader,label,view,needFit,drag,pts,redo}=PN[i]);({s:stage,b:bc,o:oc}=EL[i])}
+function act(i){if(i===ap)return;sw(i);$('#rd').value=reader;renderSide()}
+function drawAll(){const a=ap;PN.forEach((p,k)=>{if(p.open){sw(k);draw()}});sw(a)}
+const reidx=()=>{PN.forEach(p=>p.cur=D.cases.findIndex(c=>c.id===p.cid));cur=PN[ap].cur};
+function open(i){const c=D.cases[i];if(!c){PN.forEach(p=>p.cid=null);reidx();open0(-1);return}
+ let k=PN.findIndex((p,j)=>p.open&&pm(j)===c.mod);if(k<0)k=ap;if(k!==ap)act(k);open0(i);PN[ap].cid=c.id}
+const _rs3=renderSide;renderSide=()=>{_rs3();const n=PN.filter(p=>p.open).length;$('#panes').className=n>1?'multi':'';$('#panes').style.setProperty('--n',n);$('#t-label .grid').classList.toggle('multi',n>1);
+ PN.forEach((p,i)=>{const c=D.cases[i===ap?cur:p.cur],e=EL[i];e.p.hidden=!p.open;e.p.classList.toggle('act',i===ap);e.h.textContent=(i+1)+' · '+(c?c.mod+' · '+c.name.slice(0,18):'empty')+' · '+RN[i===ap?reader:p.reader];e.p.querySelector('[data-px]').hidden=n<2});
+ $('#pinfo').textContent=n+'/3 panes · one modality per pane'};
+$('#addp').onclick=()=>{const k=PN.findIndex(p=>!p.open);if(k<0)return msg('Maximum 3 task panes. Close one first.');PN[k].open=true;PN[k].cur=-1;PN[k].cid=null;act(k);
+ const used=PN.map((p,j)=>pm(j)),n=D.cases.findIndex(c=>!used.includes(c.mod));if(n>=0)open(n);else{renderSide();msg('Add or pick a case from a modality not already open.')}};
+document.addEventListener('click',e=>{const t=e.target.closest('button'),pe=t&&t.closest('.pane');if(!pe||!(t.dataset.pv||t.dataset.px))return;const i=EL.findIndex(x=>x.p===pe);act(i);
+ if(t.dataset.px){if(PN.filter(p=>p.open).length<2)return;PN[i].open=false;PN[i].cid=null;cur=-1;pts=[];drag=null;act(PN.findIndex(p=>p.open));return}
+ const c=C();if(!c)return;const L=D.cases.map((x,j)=>j).filter(j=>D.cases[j].mod===c.mod),n=L[L.indexOf(cur)+ +t.dataset.pv];if(n!==undefined)open(n)});
+const H={d:oc.onpointerdown,m:oc.onpointermove,u:oc.onpointerup,x:oc.ondblclick};
+EL.forEach((x,i)=>{const o=x.o;o.onpointerdown=e=>{act(i);H.d(e)};o.onpointermove=H.m;o.onpointerup=o.onpointercancel=H.u;o.ondblclick=H.x;
+ o.addEventListener('wheel',e=>{e.preventDefault();act(i);const p=P(e);zoomAt(p.sx,p.sy,e.deltaY<0?1.15:1/1.15)},{passive:false});
+ new ResizeObserver(()=>{const a=ap;sw(i);sizeCanvas();sw(a)}).observe(x.s)});
+function imgData(c){if(c.img.startsWith('data:'))return c.img;const im=imgs[c.id],k=document.createElement('canvas');k.width=im.width;k.height=im.height;k.getContext('2d').drawImage(im,0,0);return k.toDataURL('image/jpeg',.9)}
+
+/* ---- bulk intake: any number of images at once, natural file order ---- */
+async function ingest(files,mod){if(!$('#ack').checked)return msg('Tick the de-identification confirmation first.');
+ const fl=[...files].filter(f=>f.type.startsWith('image/')).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+ if(!fl.length)return msg('No image files found.');const out=[],tot=fl.length;let n=0,q=0;
+ await Promise.all([0,1,2,3].map(async()=>{while(q<tot){const j=q++,r=await shrink(fl[j]);if(r)out[j]=[fl[j].name,r];msg('Importing '+mod+': '+(++n)+'/'+tot)}}));
+ const first=D.cases.length;out.forEach(([nm,r])=>addCase(nm,r,mod));save();if(D.cases.length>first)open(first);renderSide();msg('Added '+(D.cases.length-first)+' '+mod+' images.')}
+const take=e=>{const f=[...e.target.files];e.target.value='';ingest(f,$('#md').value)};
+$('#file').onchange=take;$('#fold').onchange=take;$('#foldb').onclick=()=>$('#fold').click();$('#dz').onclick=()=>$('#ack').checked?$('#file').click():msg('Tick the de-identification confirmation first.');
+const dzt=()=>$('#dz').textContent='Drop any number of '+$('#md').value+' images here (or tap to choose)';$('#md').addEventListener('change',dzt);dzt();
+const dz=(el,mod)=>{el.ondragover=e=>{e.preventDefault();el.classList.add('hot')};el.ondragleave=()=>el.classList.remove('hot');el.ondrop=e=>{e.preventDefault();el.classList.remove('hot');ingest(e.dataTransfer.files,mod())}};
+dz($('#dz'),()=>$('#md').value);EL.forEach((x,i)=>dz(x.s,()=>pm(i)||$('#md').value));
+
+/* ---- multi-device sync (needs server.js; otherwise stays local) ---- */
+let srev=0,sent={},ft=0,onl=1,bad=0;
+const setSt=b=>{bad=b;$('#syn').textContent=SYNC?(bad?'● Offline, retrying':'● Shared · '+onl+' online'):'Local only'};
+const kvOf=()=>{const m={};D.cases.forEach(c=>{if(c.img&&c.img.startsWith('data:'))m['i/'+c.id]=c.img;
+ m['c/'+c.id]={id:c.id,name:c.name,w:c.w,h:c.h,mod:c.mod,flag:c.flag,adj:c.adj,aiRead:c.aiRead};['A','B','S','M'].forEach(r=>m['a/'+c.id+'/'+r]={ann:c.ann[r],none:!!c.none[r]})});m.L={labels:D.labels};return m};
+function flush(){clearTimeout(ft);ft=setTimeout(async()=>{try{const m=kvOf(),ch=[];
+ for(const k in m){const s=k[0]==='i'?'1':JSON.stringify(m[k]);if(sent[k]!==s)ch.push({k,v:m[k],s})}
+ for(const k in sent)if(k[0]!=='i'&&!(k in m))ch.push({k,v:null,s:null});
+ while(ch.length){const b=[];let z=0;while(ch.length&&z<5e6){const x=ch.shift();b.push(x);z+=JSON.stringify(x.v||0).length}
+  const r=await fetch('/api/sync',{method:'POST',body:JSON.stringify({changes:b.map(({k,v})=>({k,v}))})});if(!r.ok)throw 0;
+  b.forEach(x=>{if(x.s===null)delete sent[x.k];else sent[x.k]=x.s;if(x.k[0]==='i'){const c=D.cases.find(c=>'i/'+c.id===x.k);if(c)c.img='/api/img/'+c.id}})}
+ setSt(0)}catch(_){setSt(1);setTimeout(flush,4000)}},250)}
+function applyKV(kv){const ks=Object.keys(kv).sort((a,b)=>(a[0]==='a')-(b[0]==='a')||(a<b?-1:1));if(!ks.length)return;const m=kvOf();
+ PN.forEach((p,i)=>{p.cid=D.cases[i===ap?cur:p.cur]?.id});
+ for(const k of ks){const v=kv[k].v,[t,id,r]=k.split('/');
+  if(k in sent&&m[k]&&JSON.stringify(m[k])!==sent[k])continue; /* local edit not yet sent wins */
+  sent[k]=JSON.stringify(v);
+  if(t==='L'){if(v)D.labels=v.labels}
+  else if(t==='c'){const x=D.cases.findIndex(c=>c.id===id);if(v===null){if(x>=0)D.cases.splice(x,1)}else{const o=x>=0?D.cases[x]:{ann:{A:[],B:[],S:[],M:[]},none:{}};Object.assign(o,v,{img:o.img||'/api/img/'+id});if(x<0)D.cases.push(o)}}
+  else if(t==='a'){const c=D.cases.find(c=>c.id===id);if(c&&v){c.ann[r]=v.ann;c.none[r]=v.none}}}
+ reidx();PN.forEach(p=>{const c=D.cases[p.cur];if(c&&!imgs[c.id]){const im=new Image();im.onload=()=>{imgs[c.id]=im;drawAll()};im.src=c.img}});
+ renderSide();drawAll();({over:renderOver,queue:renderQueue,agree:renderAgree,export:renderExport}[tab]||(()=>{}))()}
+async function pull(){const r=await fetch('/api/state?since='+srev);if(!r.ok)return;const j=await r.json();srev=j.rev;applyKV(j.kv)}
+(async()=>{if(!/^https?:/.test(location.protocol))return;try{const r=await fetch('/api/state?since=0');if(!r.ok)throw 0;const j=await r.json();if(typeof j.rev!=='number')throw 0;
+ SYNC=true;srev=j.rev;applyKV(j.kv);flush();setSt(0);
+ const es=new EventSource('/api/events');es.onmessage=e=>{const x=JSON.parse(e.data);onl=x.online;if(x.rev>srev)pull().catch(()=>{});setSt(0)};es.onerror=()=>setSt(1)}catch(_){}})();
+
+/* ---- PACS + storage tab ---- */
+TT.pacs='PACS & Storage';const MM={MR:'MRI',CT:'CT',CR:'X-ray',DX:'X-ray',MG:'Mammography',NM:'Nuclear medicine',PT:'PET',US:'Ultrasound',XA:'Fluoroscopy',RF:'Fluoroscopy',IO:'Dental',PX:'Dental',SM:'Pathology'};
+const jf=async(u,o)=>{const r=await fetch(u,o),j=await r.json();if(!r.ok)throw Error(j.error||r.status);return j},pst=t=>$('#pst').textContent=t;let studies=[];
+const mb=n=>(n/1048576).toFixed(1)+' MB';
+async function loadSto(){if(!SYNC)return pst('Shared server not connected. Run node server.js and open the page from its address.');
+ try{const c=await jf('/api/pacs/config');$('#pu').value=c.url;pst(c.url?'PACS address saved'+(c.auth?' (with auth)':''):'No PACS configured yet.');
+  const j=await jf('/api/storage');$('#sto').innerHTML=[[j.cases,'Cases'],[j.images,'Image files'],[mb(j.imgBytes+j.stateBytes),'Used']].map(([a,b])=>`<div class="card stat"><b>${a}</b><span>${b}</span></div>`).join('');
+  $('#bkl').innerHTML=j.backups.map(b=>`<li>${esc(b)}</li>`).join('')||'<li class="wait">No backups yet.</li>'}catch(e){pst('Error: '+e.message)}}
+const _st4=setTab;setTab=t=>{_st4(t);if(t==='pacs')loadSto()};
+$('#ps').onclick=async()=>{try{const b={url:$('#pu').value};if($('#pk').value)b.auth=$('#pk').value;pst('Testing...');await jf('/api/pacs/config',{method:'POST',body:JSON.stringify(b)});$('#pk').value='';pst('Connected to PACS.');addLog('PACS configured')}catch(e){pst('Could not connect: '+e.message)}};
+$('#pq').onclick=async()=>{try{pst('Searching...');const q=new URLSearchParams({modality:$('#pmod').value,date:$('#pd').value.trim(),desc:$('#pdesc').value.trim()});studies=await jf('/api/pacs/search?'+q);pst(studies.length+' studies found.');
+ $('#ptab').innerHTML='<tr><th>Date</th><th>Mod</th><th>Description</th><th>Images</th><th></th></tr>'+studies.map((x,i)=>`<tr><td>${esc(x.date)}</td><td>${esc(x.mod)}</td><td>${esc(x.desc)}</td><td>${esc(x.n)}</td><td><button class="btn sm" data-pimp="${i}">Import</button></td></tr>`).join('')}catch(e){pst('Search failed: '+e.message)}};
+$('#bk').onclick=async()=>{try{pst('Backing up...');const j=await jf('/api/backup',{method:'POST'});addLog('Backup '+j.name);loadSto()}catch(e){pst('Backup failed: '+e.message)}};
+document.addEventListener('click',async e=>{const t=e.target.closest('button');if(!t||t.dataset.pimp===undefined)return;const x=studies[+t.dataset.pimp];
+ if(!$('#ack').checked)return pst('Go to Workspace and tick the de-identification confirmation first.');
+ try{const L=(await jf('/api/pacs/instances?study='+x.uid)).slice(0,300),mod=MM[(x.mod||'').split('/')[0]]||'Other',ss=[...new Set(L.map(i=>i.series))],files=[];let n=0,q=0;
+  await Promise.all([0,1,2,3].map(async()=>{while(q<L.length){const j=q++,i=L[j];pst('Retrieving '+(++n)+'/'+L.length);const r=await fetch(`/api/pacs/img?study=${x.uid}&series=${i.series}&inst=${i.inst}`);if(r.ok)files[j]=new File([await r.blob()],`PACS-${x.uid.slice(-6)}-s${ss.indexOf(i.series)+1}-${String(i.n).padStart(4,'0')}.jpg`,{type:'image/jpeg'})}}));
+  addLog('Imported '+files.filter(Boolean).length+' PACS images ('+mod+')');setTab('label');await ingest(files.filter(Boolean),mod)}catch(e){pst('Import failed: '+e.message)}});
+open(cur);
+</script>
+<script>
+/* Connection code gate, remote upload and modality library. Adds to the app above; changes nothing in it. */
+(()=>{
+const q=s=>document.querySelector(s),X=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const H={'Content-Type':'application/json'};
+const J=async(u,o)=>{const r=await fetch(u,o);let j={};try{j=await r.json()}catch(_){}if(!r.ok)throw Error(j.error||'HTTP '+r.status);return j};
+const when=t=>new Date(t).toLocaleString();
+let G=null,offline=false,subs=[],codeExp=0,tm=0;
+const status=async()=>{try{const r=await fetch('/api/connect/status',{cache:'no-store'});if(!r.ok)return null;const j=await r.json();return j&&j.gate?j:null}catch(_){return null}};
+
+/* ---- gate for remote systems ---- */
+function showGate(on){q('#gate').hidden=!on;if(on)q('#gcode').focus()}
+async function check(){G=await status();showGate(!!G&&!G.host&&!G.authed&&!offline);ui()}
+q('#gname').value=localStorage.getItem('st-dev')||'';
+q('#gcode').oninput=e=>{let v=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);e.target.value=v.length>4?v.slice(0,4)+'-'+v.slice(4):v};
+q('#gcode').onkeydown=e=>{if(e.key==='Enter')q('#ggo').click()};
+q('#ggo').onclick=async()=>{const m=q('#gmsg');m.textContent='';
+ try{const n=q('#gname').value.trim()||'Remote device';localStorage.setItem('st-dev',n);
+  await J('/api/connect',{method:'POST',headers:H,body:JSON.stringify({code:q('#gcode').value,name:n,kind:'browser'})});location.reload()}
+ catch(e){m.textContent=e.message}};
+q('#goff').onclick=()=>{offline=true;showGate(false)};
+
+/* ---- host card ---- */
+function ui(){
+ const st=q('#cc-st'),host=G&&G.host,rem=G&&!G.host&&G.authed;
+ q('#cc-hostui').hidden=!host;q('#cc-remoteui').hidden=!rem;
+ q('#up-card').style.display=G&&(rem||host)?'':'none';
+ if(!G){st.textContent='Connection gateway not running, so the app works as before. Start it with: node gateway.js';return}
+ if(host){st.textContent='You are on the main server. Generate a code and enter it on the remote system.';hostRefresh()}
+ else if(rem){st.textContent='Connected to the main server.';q('#cc-me').textContent='This device: '+(G.name||'Remote device')}
+ else st.textContent='Not connected.';
+ q('#cc-api').textContent='# 1) redeem the one-time code (once)\ncurl -X POST '+location.origin+'/api/connect \\\n  -H "Content-Type: application/json" \\\n  -d \'{"code":"XXXX-XXXX","name":"Partner server","kind":"server"}\'\n\n# 2) read shared data\ncurl -H "Authorization: Bearer TOKEN" '+location.origin+'/api/state?since=0\n\n# 3) upload annotated data (JSON export)\ncurl -X POST '+location.origin+'/api/remote/upload \\\n  -H "Authorization: Bearer TOKEN" -H "Content-Type: application/json" \\\n  -d @upload.json   # {"device":"Partner server","data":{...export...}}';
+}
+async function hostRefresh(){try{const j=await J('/api/host/status',{cache:'no-store'});
+ codeExp=j.code?j.code.exp:0;q('#cc-cancel').hidden=!j.code;
+ if(!j.code){q('#cc-code').hidden=true;q('#cc-exp').textContent=''}
+ q('#cc-list').innerHTML=j.sessions.map(s=>`<li><span class="sp"><b>${X(s.name)}</b> <span class="pill">${X(s.kind)}</span><br><small class="wait">${X(s.ip)} · connected ${X(when(s.created))}</small></span><button class="btn sm" data-rv="${X(s.id)}">Disconnect</button></li>`).join('')||'<li class="wait">No remote systems connected.</li>'}catch(_){}}
+q('#cc-gen').onclick=async()=>{try{const j=await J('/api/host/code',{method:'POST',headers:H,body:'{}'});const c=q('#cc-code');c.textContent=j.code;c.hidden=false;codeExp=j.exp;q('#cc-cancel').hidden=false;tick()}catch(e){q('#cc-st').textContent=e.message}};
+q('#cc-cancel').onclick=async()=>{await J('/api/host/code/cancel',{method:'POST',headers:H,body:'{}'});hostRefresh()};
+q('#cc-out').onclick=async()=>{await J('/api/connect/logout',{method:'POST',headers:H,body:'{}'});location.reload()};
+q('#cc-list').onclick=async e=>{const b=e.target.closest('[data-rv]');if(!b)return;await J('/api/host/revoke',{method:'POST',headers:H,body:JSON.stringify({id:b.dataset.rv})});hostRefresh()};
+function tick(){clearInterval(tm);tm=setInterval(()=>{const s=Math.round((codeExp-Date.now())/1e3);
+ if(!codeExp||s<=0){q('#cc-code').hidden=true;q('#cc-exp').textContent=codeExp?'Code expired or used.':'';clearInterval(tm);hostRefresh();return}
+ q('#cc-exp').textContent='Single use. Expires in '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s%4===0)hostRefresh()},1000)}
+
+/* ---- upload annotated data back ---- */
+q('#up-mod').innerHTML=MODS.map(m=>`<option>${m}</option>`).join('');
+const um=t=>q('#up-msg').textContent=t;
+async function send(data){um('Uploading...');try{const j=await J('/api/remote/upload',{method:'POST',headers:H,body:JSON.stringify({device:(G&&G.name)||localStorage.getItem('st-dev')||'host',modality:q('#up-mod').value,note:q('#up-note').value,data})});
+ um('Saved to the main server: '+j.saved.map(s=>s.modality+' ('+s.count+')').join(', '));addLog('Uploaded annotated data to main server');libRefresh()}catch(e){um('Upload failed: '+e.message)}}
+q('#up-ws').onclick=()=>{if(!D.cases.length)return um('Nothing to upload yet.');const ex=exportData();
+ send({format:'scanthera-upload-v1',labels:D.labels,images:ex.images.map((im,i)=>{const c=D.cases[i];return{...im,case_id:c.id,reader_layers:{A:c.ann.A,B:c.ann.B,S:c.ann.S},no_finding:c.none}})})};
+q('#up-file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{send(JSON.parse(await f.text()))}catch(_){um('That is not a valid JSON file.')}};
+
+/* ---- modality library (categories for cases and remote uploads) ---- */
+async function libRefresh(){
+ if(G){try{subs=await J('/api/remote/submissions',{cache:'no-store'})}catch(_){subs=[]}}
+ const cats=[...new Set([...MODS,...D.cases.map(c=>c.mod),...subs.map(s=>s.modality)])];
+ q('#lib').innerHTML='<tr><th>Modality</th><th>Cases</th><th>Annotated</th><th>Signed off</th><th>Flagged</th><th>Uploads</th><th></th></tr>'+cats.map(m=>{
+  const cs=D.cases.filter(c=>c.mod===m),an=cs.filter(c=>['A','B','S'].some(r=>c.ann[r].length||c.none[r])).length,fin=cs.filter(c=>finalOf(c)[0]).length,up=subs.filter(s=>s.modality===m).reduce((n,s)=>n+s.count,0);
+  return`<tr class="${cs.length||up?'':'mz'}"><td><b>${X(m)}</b></td><td>${cs.length}</td><td>${an}</td><td>${fin}</td><td>${cs.filter(c=>c.flag).length}</td><td>${up}</td><td>${cs.length?`<button class="btn sm" data-lib="${X(m)}">Open</button>`:''}</td></tr>`}).join('');
+ const by={};subs.forEach(s=>(by[s.modality]=by[s.modality]||[]).push(s));
+ q('#subt').innerHTML=Object.keys(by).length?Object.keys(by).sort((a,b)=>cats.indexOf(a)-cats.indexOf(b)).map(m=>`<tr class="mh"><td colspan="4"><b>${X(m)}</b> · ${by[m].length} upload${by[m].length>1?'s':''}</td></tr>`+by[m].map(s=>`<tr><td>${X(when(s.at))}</td><td>${X(s.device)}${s.note?'<br><small class="wait">'+X(s.note)+'</small>':''}</td><td>${s.count}</td><td><a class="btn sm" href="/api/remote/submission/${X(s.id)}" download>Download</a></td></tr>`).join('')).join(''):'<tr><td class="wait">No remote uploads yet.</td></tr>'}
+q('#lib').onclick=e=>{const b=e.target.closest('[data-lib]');if(!b)return;setTab('label');const c=document.querySelector('#mods [data-mf="'+b.dataset.lib+'"]');if(c)c.click()};
+const _s5=setTab;setTab=t=>{_s5(t);if(t==='pacs'){libRefresh();if(G&&G.host)hostRefresh()}};
+
+/* ---- PACS results grouped by modality category ---- */
+const pt=q('#ptab'),pc=q('#pcat');let pf='All',busy=false;
+const catOf=r=>MM[(r.cells[1].textContent||'').split('/')[0].trim()]||'Other';
+function group(){if(busy)return;const rows=[...pt.querySelectorAll('tr')].filter(r=>r.querySelector('td')&&!r.classList.contains('mh'));if(!rows.length){pc.innerHTML='';return}
+ busy=true;ob.disconnect();pt.querySelectorAll('.mh').forEach(r=>r.remove());
+ const ord=m=>{const i=MODS.indexOf(m);return i<0?99:i};rows.sort((a,b)=>ord(catOf(a))-ord(catOf(b)));
+ const cnt={};let last='';rows.forEach(r=>{const m=catOf(r);cnt[m]=(cnt[m]||0)+1;r.hidden=pf!=='All'&&m!==pf;
+  if(m!==last){last=m;const h=pt.insertRow();h.className='mh';h.hidden=pf!=='All'&&m!==pf;h.dataset.c=m;h.innerHTML='<td colspan="5"></td>';pt.tBodies[0].append(h)}
+  pt.tBodies[0].append(r)});
+ pt.querySelectorAll('.mh').forEach(h=>{h.firstChild.innerHTML='<b>'+X(h.dataset.c)+'</b> · '+cnt[h.dataset.c]+' stud'+(cnt[h.dataset.c]>1?'ies':'y')});
+ pc.innerHTML=['All',...Object.keys(cnt)].map(m=>`<button class="chip ${pf===m?'on':''}" data-pc="${X(m)}">${X(m)}${m==='All'?'':' '+cnt[m]}</button>`).join('');
+ busy=false;ob.observe(pt,{childList:true,subtree:true})}
+const ob=new MutationObserver(()=>group());ob.observe(pt,{childList:true,subtree:true});
+pc.onclick=e=>{const b=e.target.closest('[data-pc]');if(!b)return;pf=b.dataset.pc;group()};
+q('#pq').addEventListener('click',()=>{pf='All'});
+
+check();setInterval(check,30000);
+})();
+</script>
+<style>
+/* ---- v3 additions: written suggestions, anatomical marks, notes archive ---- */
+.nt{border-top:1px solid var(--bd);margin-top:10px;padding-top:2px}
+.nt textarea,#t-arch textarea{width:100%;font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px;min-height:64px;resize:vertical}
+.nti{padding:6px 0;border-bottom:1px solid var(--bd);font-size:13px}.nti small{color:var(--mut)}
+</style>
+<script>
+(()=>{
+const q=s=>document.querySelector(s),X=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+/* notes + anatomy marks live inside the case's aiRead object, so the existing sync carries them to every device */
+const gx=c=>c&&c.aiRead&&c.aiRead.x||{n:[],a:[]},ST=c=>{c.aiRead=c.aiRead||{};return c.aiRead.x=c.aiRead.x||{n:[],a:[]}};
+const me=()=>reader==='M'?lastH:reader,vis=n=>n.r==='M'||n.r===me()||me()==='S',say=t=>q('#nt-m').textContent=t,uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const REG=['Chest','Head / brain','Abdomen / pelvis','Spine','Limb / joint','Generic'];
+
+/* ---- UI inside the Workspace AI box ---- */
+const box=document.createElement('div');box.className='nt';
+box.innerHTML=`<h2>Written suggestions &amp; anatomy</h2><div class="row"><button class="btn pri" id="nt-ai">AI written suggestion</button><select id="nt-reg" aria-label="Body region">${REG.map(r=>`<option>${r}</option>`).join('')}</select><button class="btn pri" id="nt-an">AI: mark anatomy</button><button class="btn sm" id="nt-clr">Clear my marks</button></div>
+<textarea id="nt-t" maxlength="2000" placeholder="Written suggestion (max 2000 characters)"></textarea><div class="row"><button class="btn sm pri" id="nt-add">Save suggestion</button><span class="sub" id="nt-w"></span></div><div id="nt-l"></div><p class="sub" id="nt-m" role="status"></p>
+<p class="sub">Reader A and B suggestions stay hidden from each other; the senior adjudicator sees all. Marks use the standard view (image left = patient's right).</p>`;
+q('#airead').after(box);
+
+function render(){const c=C(),l=q('#nt-l');q('#nt-w').textContent='Writing as '+RN[me()];if(!c){l.innerHTML='';return}
+ const x=gx(c),ns=x.n.filter(vis),ms=x.a.filter(k=>k.r==='M'||k.r===reader||reader==='S');
+ l.innerHTML=(ns.map(n=>`<div class="nti"><b>${X(RN[n.r])}</b> <small>${X(new Date(n.at).toLocaleString())} · ${X(n.src)}</small><br>${X(n.t)}${n.r===me()||me()==='S'?` <button class="btn sm" data-ndel="${X(n.id)}">Delete</button>`:''}</div>`).join('')||'<p class="sub">No written suggestions on this case yet.</p>')
+  +(ms.length?'<p class="sub"><b>Anatomical marks:</b> '+ms.map(k=>X(k.term)+' ('+X(RN[k.r])+')').join(' · ')+'</p>':'')}
+const r0=renderSide;renderSide=()=>{r0();render()};
+q('#nt-l').onclick=e=>{const b=e.target.closest('[data-ndel]'),c=C();if(!b||!c)return;const x=ST(c);x.n=x.n.filter(n=>n.id!==b.dataset.ndel);save();render()};
+
+/* ---- AI call (same /assess endpoint and key as the AI clinical read) ---- */
+async function ai(system,summary){if(q('#aim').value==='sim')return null;
+ try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),60000),r=await fetch(q('#aiu').value.trim().replace(/\/segment\/?$/,'')+'/assess',{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':q('#aik').value},body:JSON.stringify({image:imgData(C()),system,summary}),signal:ac.signal});clearTimeout(tm);return r.ok?await r.json():null}catch(_){return null}}
+
+/* ---- written suggestions (human + AI) ---- */
+q('#nt-add').onclick=()=>{const c=C(),t=q('#nt-t').value.trim();if(!c)return say('Open a case first.');if(!t)return say('Type a suggestion first.');
+ ST(c).n.push({id:uid(),r:me(),t,at:Date.now(),src:'human'});q('#nt-t').value='';addLog('Written suggestion added on '+c.name);save();render();say('Saved.')};
+q('#nt-ai').onclick=async()=>{const c=C();if(!c)return say('Open a case first.');say('AI writing...');
+ const st=c.ann.M.map(a=>({label:D.labels[a.l],bbox:bbox(a)})),an=gx(c).a.filter(k=>k.r==='M').map(k=>k.term),labs=[...new Set(st.map(s=>s.label))];
+ const j=await ai('You are a radiology QA assistant. Reply ONLY with JSON {"suggestion":"<=60 words, clinical terms, no diagnosis"}.',{modality:c.mod,width:c.w,height:c.h,ai_structures:st,anatomy:an});
+ let t=j&&(j.suggestion||j.impression),src=j&&(j.model||'AI');
+ if(!t){if(!st.length)return say('Run AI Suggest first, so the AI has a layer to describe.');
+  t=`Rule-based note (no image read): ${c.mod} study with ${st.length} AI-outlined structure(s) [${labs.join(', ')}]${an.length?', located: '+an.join('; '):''}. Confirm the margins on the image, compare with prior imaging and correlate clinically.`;src='rule-based'}
+ ST(c).n.push({id:uid(),r:'M',t:String(t).slice(0,2000),at:Date.now(),src});addLog('AI written suggestion on '+c.name);save();render();say('AI suggestion added. A qualified reader must review it.')};
+
+/* ---- anatomical marks ---- */
+function terms(reg,b,c){const u=(b[0]+b[2]/2)/c.w,v=(b[1]+b[3]/2)/c.h,s=u<.5?'right':'left',mid=Math.abs(u-.5)<.08,z=v<.33?'upper':v<.66?'mid':'lower';
+ if(reg==='Chest')return mid&&v>.2&&v<.7?'mediastinum / perihilar':s+' '+z+' zone';
+ if(reg==='Head / brain')return mid?'midline / deep central':s+' '+(v<.35?'frontal':v>.65?'occipital':'temporo-parietal');
+ if(reg==='Abdomen / pelvis')return v>.8?'pelvis, '+(mid?'midline':s):mid?'midline '+(v<.5?'upper':'lower')+' abdomen':s+' '+(v<.5?'upper':'lower')+' quadrant';
+ if(reg==='Spine')return(v<.25?'cervical':v<.55?'thoracic':v<.85?'lumbar':'sacral')+' level (approx.)';
+ if(reg==='Limb / joint')return(v<.33?'proximal':v<.66?'mid':'distal')+' third, '+(u<.5?'image-left':'image-right')+' side';
+ return(v<.5?'upper':'lower')+' '+(u<.5?'image-left':'image-right')}
+q('#nt-an').onclick=async()=>{const c=C(),L=c?A():[];if(!c)return say('Open a case first.');if(!L.length)return say('This layer has no annotations to mark. Draw one, or switch to the AI layer.');
+ const reg=q('#nt-reg').value;say('AI marking...');let m=null,src='rule-based position (not image-read)';
+ const j=await ai('You are a radiology QA assistant. Reply ONLY with JSON {"marks":[{"i":<index>,"term":"<standard anatomical term with laterality>"}]}, one per listed structure.',{region:reg,modality:c.mod,width:c.w,height:c.h,structures:L.map((a,i)=>({i,label:D.labels[a.l],bbox:bbox(a)}))});
+ if(j&&Array.isArray(j.marks)){m=L.map((a,i)=>{const k=j.marks.find(x=>x.i===i);return k&&k.term?{b:bbox(a),term:String(k.term).slice(0,60)}:null}).filter(Boolean);src=j.model||'AI'}
+ if(!m||!m.length){m=L.map(a=>({b:bbox(a),term:terms(reg,bbox(a),c)}));src='rule-based position (not image-read)'}
+ const x=ST(c);x.a=x.a.filter(k=>k.r!==reader).concat(m.map(k=>({...k,r:reader,src,at:Date.now()})));addLog('Anatomical marks ('+src+') on '+c.name);save();render();draw();say(m.length+' mark(s) added. '+(src.startsWith('rule')?'Position-based only: verify every term.':'Verify every term.'))};
+q('#nt-clr').onclick=()=>{const c=C();if(!c)return;const x=ST(c);x.a=x.a.filter(k=>k.r!==reader);save();render();draw()};
+const d0=draw;draw=function(){d0();const c=C();if(!c||!imgs[c.id])return;const m=gx(c).a.filter(k=>k.r==='M'||k.r===reader||reader==='S');if(!m.length)return;
+ const g=oc.getContext('2d'),f=13/view.s,p=3/view.s;g.setTransform(view.s,0,0,view.s,view.x,view.y);g.font='600 '+f+'px system-ui,sans-serif';g.textBaseline='bottom';
+ m.forEach(k=>{const w=g.measureText(k.term).width+2*p;g.fillStyle='rgba(0,0,0,.75)';g.fillRect(k.b[0],k.b[1]-f-p,w,f+p);g.fillStyle='#fff';g.fillText(k.term,k.b[0]+p,k.b[1]-p/2)})};
+/* keep notes when the AI clinical read replaces aiRead */
+const ask=q('#aiask'),askOld=ask.onclick;ask.onclick=async()=>{const c=C(),x=c&&c.aiRead&&c.aiRead.x;await askOld();if(c&&x){c.aiRead=c.aiRead||{};c.aiRead.x=x;save()}};
+
+/* ---- Notes archive tab ---- */
+const REF={'General':['Orientation: right and left always mean the patient\'s. On standard views and axial slices, image left = patient right.','Terms: anterior/posterior, superior/inferior (cranial/caudal), medial/lateral, proximal/distal, superficial/deep. Planes: axial, coronal, sagittal.'],
+'X-ray':['Projection image: air black, fat dark grey, soft tissue grey, bone and contrast white. Check the view (PA, AP, lateral) and patient rotation first.','Systematic review, for example airway, breathing, cardiac, diaphragm, everything else (ABCDE).'],
+'CT':['Attenuation in Hounsfield units (approx.): air -1000, fat -100 to -50, water 0, soft tissue 30 to 60, acute blood 50 to 70, bone above 300.','Window level and width change what is visible (brain, lung, bone, soft tissue windows). Annotate on a consistent window.'],
+'MRI':['T1: fat bright, fluid dark. T2: fluid bright. FLAIR suppresses CSF. DWI bright with low ADC suggests restricted diffusion.','Keep the sequence name and plane with every annotation. Slices from one series are labeled together.'],
+'Mammography':['Standard views: CC and MLO for each breast. Assessment uses BI-RADS categories 0 to 6.','Describe masses by shape, margin and density; calcifications by morphology and distribution.'],
+'Ultrasound':['Echogenicity: anechoic, hypoechoic, isoechoic, hyperechoic. Posterior enhancement suggests fluid; posterior shadowing suggests a strongly reflecting or absorbing structure.','Probe position and Doppler settings change appearance. Record them.'],
+'Nuclear medicine':['Planar and SPECT images show tracer distribution. Compare focal uptake with known physiological uptake sites.'],
+'PET':['Uptake is often quantified as SUV (activity normalised to dose and body weight). Correlate with the CT or MRI from the same study.'],
+'Fluoroscopy':['Real-time X-ray, often with contrast. Annotate representative frames and note the phase of the study.'],
+'Dental':['Common types: periapical, bitewing, panoramic. FDI two-digit numbering is widely used for teeth.'],
+'Pathology':['Whole-slide images: record stain (for example H&E), magnification and the region of interest annotated.']};
+const sec=document.createElement('section');sec.id='t-arch';
+sec.innerHTML=`<div class="card"><div class="row"><input type="text" id="ar-q" placeholder="Search archived notes..." size="26"><select id="ar-m" aria-label="Modality"></select><button class="btn sm" id="ar-x">Download notes JSON</button></div>
+<h2>Case notes archive (shared with the case data)</h2><div class="scroll"><table id="ar-c"></table></div></div>
+<div class="grid" style="margin-top:14px"><div class="card"><h2>Reference notes on medical imaging</h2><div id="ar-r"></div><p class="sub">Short educational summaries, not clinical guidance.</p></div>
+<div class="card"><h2>My archived notes (this device)</h2><div class="row"><select id="ar-am"></select><input type="text" id="ar-ah" placeholder="Title" maxlength="80"></div><textarea id="ar-at" maxlength="4000" placeholder="Note"></textarea>
+<div class="row"><button class="btn pri" id="ar-add">Archive note</button><label class="btn sm">Import JSON<input type="file" id="ar-i" accept=".json,application/json" hidden></label></div><ul id="ar-u"></ul>
+<p class="sub">Personal notes stay in this browser. Use Download and Import to move them to another device.</p></div></div>`;
+q('main').append(sec);TT.arch='Notes archive';
+const tb=document.createElement('button');tb.setAttribute('role','tab');tb.dataset.tab='arch';tb.setAttribute('aria-selected','false');tb.innerHTML='<span class="ic">▤</span><span class="tl">Notes archive</span>';q('#tabs').insertBefore(tb,q('#tabs [data-tab="ai"]'));
+q('#ar-m').innerHTML=['All',...MODS].map(m=>`<option>${m}</option>`).join('');q('#ar-am').innerHTML=['General',...MODS].map(m=>`<option>${m}</option>`).join('');
+let U=[];try{U=JSON.parse(localStorage.getItem('scanthera-archive')||'[]')}catch(_){}const sU=()=>{try{localStorage.setItem('scanthera-archive',JSON.stringify(U))}catch(_){}};
+function arch(){const s=q('#ar-q').value.toLowerCase(),m=q('#ar-m').value,f=(md,t)=>(m==='All'||md===m||md==='General')&&(!s||(md+' '+t).toLowerCase().includes(s));
+ const rows=[];D.cases.forEach(c=>{gx(c).n.filter(vis).forEach(n=>rows.push([n.at,c.mod,c.name,RN[n.r],n.t]));if(c.adj&&c.adj.note)rows.push([c.adj.t||0,c.mod,c.name,'Adjudicator ('+c.adj.by+')',c.adj.note])});
+ const R=rows.filter(r=>(m==='All'||r[1]===m)&&(!s||r.join(' ').toLowerCase().includes(s))).sort((a,b)=>b[0]-a[0]);
+ q('#ar-c').innerHTML='<tr><th>Date</th><th>Modality</th><th>Case</th><th>Author</th><th>Note</th></tr>'+(R.map(r=>`<tr><td>${X(new Date(r[0]).toLocaleDateString())}</td><td>${X(r[1])}</td><td>${X(r[2])}</td><td>${X(r[3])}</td><td>${X(r[4])}</td></tr>`).join('')||'<tr><td colspan="5" class="wait">No case notes match.</td></tr>');
+ q('#ar-r').innerHTML=Object.entries(REF).filter(([k,v])=>f(k,v.join(' '))).map(([k,v])=>`<h2>${X(k)}</h2>`+v.map(x=>`<p style="margin:4px 0;font-size:13px">${X(x)}</p>`).join('')).join('')||'<p class="sub">No reference notes match.</p>';
+ q('#ar-u').innerHTML=U.filter(u=>f(u.m,u.h+' '+u.t)).map(u=>`<li style="display:block"><b>${X(u.h)}</b> <span class="pill">${X(u.m)}</span> <button class="btn sm" data-udel="${X(u.id)}">Delete</button><br><span style="font-size:13px">${X(u.t)}</span></li>`).join('')||'<li class="wait">No personal notes yet.</li>'}
+['input','change'].forEach(ev=>{q('#ar-q').addEventListener(ev,arch);q('#ar-m').addEventListener(ev,arch)});
+q('#ar-add').onclick=()=>{const h=q('#ar-ah').value.trim(),t=q('#ar-at').value.trim();if(!h||!t)return;U.unshift({id:uid(),m:q('#ar-am').value,h,t,at:Date.now()});sU();q('#ar-ah').value=q('#ar-at').value='';arch()};
+q('#ar-u').onclick=e=>{const b=e.target.closest('[data-udel]');if(!b)return;U=U.filter(u=>u.id!==b.dataset.udel);sU();arch()};
+q('#ar-x').onclick=()=>{const out={cases:D.cases.map(c=>({file:c.name,modality:c.mod,notes:gx(c).n.filter(vis).map(n=>({author:RN[n.r],at:new Date(n.at).toISOString(),source:n.src,text:n.t})),anatomy:gx(c).a.filter(k=>k.r==='M'||k.r===reader||reader==='S').map(k=>({term:k.term,bbox:k.b,author:RN[k.r],source:k.src}))})).filter(c=>c.notes.length||c.anatomy.length),personal_archive:U};
+ try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,1)],{type:'application/json'}));a.download='scanthera-notes.json';a.click()}catch(_){}};
+q('#ar-i').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const j=JSON.parse(await f.text()),l=Array.isArray(j)?j:j.personal_archive||[];l.forEach(u=>{if(u&&u.h&&u.t&&!U.some(x=>x.id===u.id))U.push({id:u.id||uid(),m:u.m||'General',h:String(u.h).slice(0,80),t:String(u.t).slice(0,4000),at:u.at||Date.now()})});sU();arch()}catch(_){}};
+const s6=setTab;setTab=t=>{s6(t);if(t==='arch')arch()};
+renderSide();
+})();
+</script>
+</body></html>
